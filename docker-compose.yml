@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Сборка базового образа
+  env-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: env-bot
+    image: analyze-tt-bot-env-bot:latest
+
+
+  # Основной бот
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bot
+    image: analyze-tt-bot:latest
+    command: -Debug
+    depends_on:
+      - env-bot
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-test_token}
+      - LOG_LEVEL=Verbose
+  
+
+  # Сборка базового образа для тестирования
+  env-bot-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: env-bot-test
+    image: analyze-tt-bot-env-bot-test:latest
+    depends_on:
+      - env-bot
+
+  # Сборка образа для интеграционного тестирования
+  bot-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bot-test
+    image: analyze-tt-bot-test:latest
+    depends_on:
+      - env-bot-test
+    volumes:
+      - ./temp/test-results:/app/test-results
+      - ./temp/logs:/app/logs
+      - ./temp:/app/temp
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-test_token_for_integration_tests}
+      - LOG_LEVEL=Information

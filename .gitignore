@@ -1,0 +1,18 @@
+# Временная папка
+/temp/
+/logs/
+/test-results/
+
+# Логи и отладочные файлы
+*.log
+*.tmp
+
+# Файлы настроек среды разработки
+.vscode/
+.idea/
+.project
+
+# Локальные файлы конфигурации
+local.config.ps1
+*.local.ps1
+**/local.*.ps1

@@ -1,0 +1,9 @@
+[TikTok] https://www.tiktok.com/@username/video/1234567890: Downloading webpage
+[TikTok] https://www.tiktok.com/@username/video/1234567890: Downloading m3u8 information
+[info] 1234567890: Downloading 1 format(s): hvc1-2060
+[download] Destination: tiktok_1234567890.mp4
+[download] 100% of 13.72MiB in 00:05
+[Merger] Merging formats into "tiktok_1234567890.mp4"
+[Merger] Merged successfully
+[TikTok] Video belongs to: @username
+https://www.tiktok.com/@username/video/1234567890

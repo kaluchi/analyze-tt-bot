@@ -1,0 +1,52 @@
+General
+Complete name                            : tiktok_1234567890.mp4
+Format                                   : MPEG-4
+Format profile                           : Base Media
+Codec ID                                 : isom
+File size                                : 13.7 MiB
+Duration                                 : 15 s 532 ms
+Overall bit rate mode                    : Variable
+Overall bit rate                         : 7 382 kb/s
+Comment                                  : vid:v09044g40000cvgdnrrc7hlln06e6h2g
+
+Video
+ID                                       : 1
+Format                                   : HEVC
+Format/Info                              : High Efficiency Video Coding
+Format profile                           : Main@L5@Main
+Codec ID                                 : hvc1
+Codec ID/Info                            : High Efficiency Video Coding
+Duration                                 : 15 s 532 ms
+Bit rate                                 : 7 251 kb/s
+Width                                    : 1 080 pixels
+Height                                   : 1 920 pixels
+Display aspect ratio                     : 9:16
+Frame rate mode                          : Constant
+Frame rate                               : 60.000 FPS
+Color space                              : YUV
+Chroma subsampling                       : 4:2:0
+Bit depth                                : 8 bits
+Bits/(Pixel*Frame)                       : 0.059
+Stream size                              : 13.4 MiB (98%)
+Color range                              : Limited
+Color primaries                          : BT.709
+Transfer characteristics                 : BT.709
+Matrix coefficients                      : BT.709
+Codec configuration box                  : hvcC
+
+Audio
+ID                                       : 2
+Format                                   : AAC LC
+Format/Info                              : Advanced Audio Codec Low Complexity
+Codec ID                                 : mp4a-40-2
+Duration                                 : 15 s 501 ms
+Bit rate mode                            : Constant
+Bit rate                                 : 128 kb/s
+Channel(s)                               : 2 channels
+Channel layout                           : L R
+Sampling rate                            : 48.0 kHz
+Frame rate                               : 46.875 FPS (1024 SPF)
+Compression mode                         : Lossy
+Stream size                              : 242 KiB (2%)
+Default                                  : Yes
+Alternate group                          : 1

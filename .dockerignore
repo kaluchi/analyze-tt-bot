@@ -1,0 +1,9 @@
+.git/
+.vscode/
+temp/
+logs/
+.gitignore
+.project
+*.md
+.dockerignore
+Dockerfile
