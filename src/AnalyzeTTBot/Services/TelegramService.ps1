@@ -255,7 +255,7 @@ class TelegramService : ITelegramService {
             if ($response.ok) {
                 $updates = if ($null -ne $response.result) { $response.result } else { @() }
                 if ($updates.Count -gt 0) {
-                    Write-PSFMessage -Level Verbose -FunctionName "GetUpdates" -Message "Received $($updates.Count) updates"
+                    Write-PSFMessage -Level Verbose -FunctionName "GetUpdates" -Message "Received $($updates.Count) updates. Updates content: $($updates | ConvertTo-Json -Depth 10)"
                 }
                 return New-SuccessResponse -Data $updates
             } else {

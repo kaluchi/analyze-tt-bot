@@ -57,20 +57,27 @@ class BotService : IBotService {
                 
                 foreach ($update in $updates) {
                     $lastUpdateId = $update.update_id + 1
-                    
-                    if ($update.message -and $update.message.text) {
-                        $chatId = $update.message.chat.id
-                        $messageId = $update.message.message_id
-                        $messageText = $update.message.text
-                        
-                        Write-PSFMessage -Level Verbose -FunctionName "BotService.Start" -Message "Received message: $messageText from chat ID: $chatId"
-                        
+                    # Универсальная обработка разных типов сообщений
+                    $messageObj = $null
+                    $messageType = $null
+                    if ($update.PSObject.Properties["message"] -and $update.message.text) {
+                        $messageObj = $update.message
+                        $messageType = $update.message.chat.type
+                    } elseif ($update.PSObject.Properties["channel_post"] -and $update.channel_post.text) {
+                        $messageObj = $update.channel_post
+                        $messageType = $update.channel_post.chat.type
+                    }
+                    if ($messageObj -and $messageObj.text) {
+                        $chatId = $messageObj.chat.id
+                        $messageId = $messageObj.message_id
+                        $messageText = $messageObj.text
+                        $chatType = $messageObj.chat.type
+                        Write-PSFMessage -Level Verbose -FunctionName "BotService.Start" -Message "Получено сообщение ($messageType): $messageText из чата ID: $chatId"
                         # Проверяем, является ли сообщение командой (начинается со слэша)
                         if ($messageText.StartsWith('/')) {
                             $this.HandleMenuCommand($messageText, $chatId, $messageId)
-                        }
-                        else {
-                            $this.HandleTextMessage($messageText, $chatId, $messageId)
+                        } else {
+                            $this.HandleTextMessage($messageText, $chatId, $messageId, $chatType)
                         }
                     }
                 }
@@ -105,13 +112,12 @@ class BotService : IBotService {
         }
     }
     
-    [void] HandleTextMessage([string]$messageText, [long]$chatId, [int]$messageId) {
+    [void] HandleTextMessage([string]$messageText, [long]$chatId, [int]$messageId, [string]$chatType = "private") {
         $result = $this.ValidateTextMessage($messageText)
-        
         if ($result.Success) {
             $this.ProcessTikTokUrl($result.Data.Url, $chatId, $messageId)
         } else {
-            $this.ProcessInvalidMessage($result.Error, $chatId, $messageId)
+            $this.ProcessInvalidMessage($result.Error, $chatId, $messageId, $chatType)
         }
     }
     
@@ -158,10 +164,14 @@ class BotService : IBotService {
         }
     }
     
-    [void] ProcessInvalidMessage([string]$errorMessage, [long]$chatId, [int]$messageId) {
-        $invalidLinkMessage = Get-PSFConfigValue -FullName "AnalyzeTTBot.Messages.InvalidLink"
-        $this.TelegramService.SendMessage($chatId, $invalidLinkMessage, $messageId, "HTML")
-        Write-PSFMessage -Level Verbose -FunctionName "BotService.ProcessInvalidMessage" -Message "Sent invalid link message to chat $chatId. Error: $errorMessage" -Target $this
+    [void] ProcessInvalidMessage([string]$errorMessage, [long]$chatId, [int]$messageId, [string]$chatType = "private") {
+        if ($chatType -eq "private") {
+            $invalidLinkMessage = Get-PSFConfigValue -FullName "AnalyzeTTBot.Messages.InvalidLink"
+            $this.TelegramService.SendMessage($chatId, $invalidLinkMessage, $messageId, "HTML")
+            Write-PSFMessage -Level Verbose -FunctionName "BotService.ProcessInvalidMessage" -Message "Sent invalid link message to chat $chatId. Error: $errorMessage" -Target $this
+        } else {
+            Write-PSFMessage -Level Verbose -FunctionName "BotService.ProcessInvalidMessage" -Message "Skipped sending invalid link message to group chat $chatId. Error: $errorMessage" -Target $this
+        }
     }
     
     [void] HandleException([System.Exception]$exception, [string]$functionName) {

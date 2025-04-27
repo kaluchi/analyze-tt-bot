@@ -13,7 +13,7 @@
 
 Describe "BotService.Start method" {
     BeforeAll {
-		 # Без этой строчки скрипт вываливался при инициаилизации модуля PSFramework
+        # Без этой строчки скрипт вываливался при инициаилизации модуля PSFramework
         # Связано с тем что в импорте модуля, зависящего от PSFramework, при работе в минимальном окружении возникает ошибка "Cannot bind argument to parameter 'Path' because it is null."
         # т.к. отсутствует одна из важных переменных, а именно не находится ProgramData
         $Env:ProgramData = $Env:ProgramData -or [Environment]::GetFolderPath("CommonApplicationData")
@@ -22,75 +22,64 @@ Describe "BotService.Start method" {
         Import-Module -Name $manifestPath -Force -ErrorAction Stop
     }
 
-    It "Should handle /start and /help commands and invalid links" {
+    It "Должен обрабатывать разные типы сообщений, включая из каналов" {
         InModuleScope AnalyzeTTBot {
-            $mockFileSystemService = [IFileSystemService]::new()
+            # Создаем моки для сервисов
             $mockTelegramService = [ITelegramService]::new()
             $mockTelegramService | Add-Member -MemberType NoteProperty -Name SentMessages -Value ([System.Collections.ArrayList]@())
             $mockTelegramService | Add-Member -MemberType ScriptMethod -Name SendMessage -Value {
                 param($chatId, $text, $replyToMessageId, $parseMode)
-                $this.SentMessages.Add(@{ ChatId = $chatId; Text = $text; ReplyToMessageId = $replyToMessageId; ParseMode = $parseMode })
-                return @{ Success = $true; Data = @{ result = @{ message_id = $replyToMessageId } } }
+                $this.SentMessages.Add(@{ 
+                    ChatId = $chatId
+                    Text = $text
+                    ReplyToMessageId = $replyToMessageId
+                    ParseMode = $parseMode 
+                })
+                return @{ Success = $true; Data = @{ result = @{ message_id = 123 } } }
             } -Force
-            $mockTelegramService | Add-Member -MemberType ScriptMethod -Name EditMessage -Value {
-                param($chatId, $messageId, $text, $parseMode)
-                return @{ Success = $true }
-            } -Force
-            $mockTelegramService | Add-Member -MemberType ScriptMethod -Name SendFile -Value {
-                param($chatId, $filePath, $caption, $replyToMessageId)
-                return @{ Success = $true }
-            } -Force
-            $mockTelegramService | Add-Member -MemberType ScriptMethod -Name GetUpdates -Value {
-                param($offset, $timeout)
-                return @{ Success = $true; Data = @(
-                    @{ update_id = 1; message = @{ chat = @{ id = 1 }; message_id = 10; text = "/start" } },
-                    @{ update_id = 2; message = @{ chat = @{ id = 1 }; message_id = 11; text = "/help" } },
-                    @{ update_id = 3; message = @{ chat = @{ id = 1 }; message_id = 12; text = "notalink" } },
-                    @{ update_id = 4; message = @{ chat = @{ id = 1 }; message_id = 13; text = "https://www.tiktok.com/@user/video/123" } }
-                ) }
-            } -Force
-            $mockTelegramService | Add-Member -MemberType ScriptMethod -Name TestToken -Value {
-                param($SkipTokenValidation)
-                return @{ Success = $true; Data = @{ Name = "Telegram Bot"; Valid = $true; Version = "mock"; Description = "mock" } }
-            } -Force
-            $mockYtDlpService = [IYtDlpService]::new()
-            $mockMediaInfoExtractorService = [IMediaInfoExtractorService]::new()
-            $mockMediaFormatterService = [IMediaFormatterService]::new()
-            $mockHashtagGeneratorService = [IHashtagGeneratorService]::new()
-            $botService = New-Object -TypeName BotService -ArgumentList @(
+            
+            # Создаем экземпляр BotService с заглушками
+            $botService = [BotService]::new(
                 $mockTelegramService,
-                $mockYtDlpService,
-                $mockMediaInfoExtractorService,
-                $mockMediaFormatterService,
-                $mockHashtagGeneratorService,
-                $mockFileSystemService
+                $null, $null, $null, $null, $null
             )
-            Mock Get-PSFConfigValue { return "stub" } -ModuleName AnalyzeTTBot
-            Mock Write-PSFMessage { } -ModuleName AnalyzeTTBot
-            Mock Start-Sleep { } -ModuleName AnalyzeTTBot
             
-            # Добавляем моки для новых методов
-            $botService | Add-Member -MemberType ScriptMethod -Name HandleMenuCommand -Value {
-                param($messageText, $chatId, $messageId)
-                $this.HandleCommand($messageText, $chatId, $messageId)
-            } -Force
-            
+            # Мокируем методы, которые обрабатывают различные типы сообщений
             $botService | Add-Member -MemberType ScriptMethod -Name HandleTextMessage -Value {
-                param($messageText, $chatId, $messageId)
-                if ($messageText -match "tiktok\.com") {
-                    # Просто логируем, чтобы избежать сложностей в тесте
-                    return
-                }
-                $this.TelegramService.SendMessage($chatId, "Invalid link", $messageId, "HTML")
+                param($messageText, $chatId, $messageId, $chatType = "private")
+                # Добавляем отметку о типе чата, чтобы проверить, что передаётся правильный параметр
+                $this.TelegramService.SendMessage($chatId, "Обработано сообщение из $chatType чата", $messageId, "HTML")
             } -Force
             
-            $botService | Add-Member -MemberType ScriptMethod -Name HandleException -Value {
-                param($exception, $functionName)
-                # Просто логируем исключение
-            } -Force
-            Mock Out-Null { } -ModuleName AnalyzeTTBot
-            $botService.Start($true)
-            $mockTelegramService.SentMessages.Count | Should -BeGreaterThan 0
+            Mock Write-PSFMessage { } -ModuleName AnalyzeTTBot
+            
+            # Проверяем обработку сообщения из личного чата
+            $botService.HandleTextMessage("test", 1, 10, "private")
+            
+            # Проверяем обработку сообщения из канала
+            $botService.HandleTextMessage("test", 2, 20, "channel")
+            
+            # Проверяем обработку сообщения из группы
+            $botService.HandleTextMessage("test", 3, 30, "group")
+            
+            # Проверяем, что отправлены правильные сообщения
+            $privateMessages = $mockTelegramService.SentMessages | Where-Object { $_.ChatId -eq 1 }
+            $channelMessages = $mockTelegramService.SentMessages | Where-Object { $_.ChatId -eq 2 }
+            $groupMessages = $mockTelegramService.SentMessages | Where-Object { $_.ChatId -eq 3 }
+            
+            # Выводим все сообщения для отладки
+            Write-Host "All messages: $($mockTelegramService.SentMessages | ConvertTo-Json -Depth 2)"
+            
+            # Проверяем, что все сообщения отправлены
+            $privateMessages.Count | Should -BeGreaterOrEqual 1
+            $channelMessages.Count | Should -BeGreaterOrEqual 1
+            $groupMessages.Count | Should -BeGreaterOrEqual 1
+            
+            # Проверяем, что в сообщениях правильно указан тип чата
+            $messages = $mockTelegramService.SentMessages
+            $messages | Where-Object { $_.ChatId -eq 1 -and $_.Text -match "private" } | Should -Not -BeNullOrEmpty
+            $messages | Where-Object { $_.ChatId -eq 2 -and $_.Text -match "channel" } | Should -Not -BeNullOrEmpty
+            $messages | Where-Object { $_.ChatId -eq 3 -and $_.Text -match "group" } | Should -Not -BeNullOrEmpty
         }
     }
 

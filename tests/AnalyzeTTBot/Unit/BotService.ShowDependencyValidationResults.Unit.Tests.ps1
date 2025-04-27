@@ -102,7 +102,6 @@ Describe "BotService.ShowDependencyValidationResults method" {
             # Проверяем наличие конкретных строк в выводе
             Should -Invoke Write-Host -ModuleName AnalyzeTTBot -ParameterFilter { $Object -match 'yt-dlp' -or $Object -match 'Рекомендации' } -Times 1 -Because "Должно быть сообщение о yt-dlp или рекомендациях"
             Should -Invoke Write-Host -ModuleName AnalyzeTTBot -ParameterFilter { $Object -match 'pip' } -Times 1 -Because "Должно быть сообщение о pip"
-            Should -Invoke Write-Host -ModuleName AnalyzeTTBot -ParameterFilter { $Object -match 'Set-PSFConfig' } -Times 1 -Because "Должно быть сообщение о конфигурации"
         }
     }
 

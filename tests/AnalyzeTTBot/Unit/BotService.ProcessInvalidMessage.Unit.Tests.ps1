@@ -61,7 +61,7 @@ Describe 'BotService.ProcessInvalidMessage method' {
             $messageId = 987654321
             
             # Вызываем тестируемый метод
-            $botService.ProcessInvalidMessage($errorMessage, $chatId, $messageId)
+            $botService.ProcessInvalidMessage($errorMessage, $chatId, $messageId, "private")
             
             # Проверяем, что сообщение было отправлено
             $mockTelegramService.SentMessages.Count | Should -Be 1
@@ -113,7 +113,7 @@ Describe 'BotService.ProcessInvalidMessage method' {
             $chatId = 123456789
             $messageId = 987654321
             
-            $botService.ProcessInvalidMessage($errorMessage, $chatId, $messageId)
+            $botService.ProcessInvalidMessage($errorMessage, $chatId, $messageId, "private")
             
             # Проверяем, что сообщение было отправлено
             $mockTelegramService.SentMessages.Count | Should -Be 1
@@ -161,7 +161,7 @@ Describe 'BotService.ProcessInvalidMessage method' {
             $chatId = 123456789
             $messageId = 987654321
             
-            $botService.ProcessInvalidMessage($errorMessage, $chatId, $messageId)
+            $botService.ProcessInvalidMessage($errorMessage, $chatId, $messageId, "private")
             
             # Проверяем, что сообщение было отправлено с null текстом
             $mockTelegramService.SentMessages.Count | Should -Be 1
@@ -205,7 +205,7 @@ Describe 'BotService.ProcessInvalidMessage method' {
             $chatId = 123456789
             $messageId = 987654321
             
-            $botService.ProcessInvalidMessage($errorMessage, $chatId, $messageId)
+            $botService.ProcessInvalidMessage($errorMessage, $chatId, $messageId, "private")
             
             # Проверяем, что в лог-сообщении содержится переданное сообщение об ошибке
             Should -Invoke -CommandName Write-PSFMessage -ModuleName AnalyzeTTBot -Times 1 -ParameterFilter {
