@@ -474,15 +474,32 @@ class YtDlpService : IYtDlpService {
             Write-PSFMessage -Level Debug -FunctionName "CheckUpdates" -Message "Processing pip index output for yt-dlp"
             $pipOutput = $pipIndex.Output | ForEach-Object { $_.Trim() }
             
+            # Объединяем весь вывод в одну строку для обработки случаев, когда вывод приходит в одной строке
+            $fullOutput = $pipOutput -join " "
+            
             # ОТЛАДОЧНЫЙ ВЫВОД ДЛЯ ДЕБАГА ПАРСИНГА ВЕРСИЙ
-            Write-PSFMessage -Level Debug -FunctionName "CheckUpdates" -Message "pipOutput: $($pipOutput -join '\n')"
-            $installedLine = ($pipOutput | Select-String 'INSTALLED:').Line | Select-Object -First 1
-            $latestLine = ($pipOutput | Select-String 'LATEST:').Line | Select-Object -First 1
-            if ($installedLine) { $installedLine = $installedLine.ToString().Trim() }
-            if ($latestLine)   { $latestLine   = $latestLine.ToString().Trim() }
-            if ($installedLine -and $latestLine) {
-                $currentVersion = ($installedLine -split ':',2)[1].Trim().Split(',')[0].Trim()
-                $latestVersion = ($latestLine   -split ':',2)[1].Trim().Split(',')[0].Trim()
+            Write-PSFMessage -Level Debug -FunctionName "CheckUpdates" -Message "Full output: $fullOutput"
+            
+            # Ищем INSTALLED и LATEST в объединенном выводе
+            if ($fullOutput -match 'INSTALLED:\s*([^\s]+)' -and $fullOutput -match 'LATEST:\s*([^\s]+)') {
+                $currentVersion = $matches[1].Trim() # Из первого match (INSTALLED)
+                # Нужно заново выполнить match для LATEST, так как $matches перезаписывается
+                if ($fullOutput -match 'LATEST:\s*([^\s]+)') {
+                    $latestVersion = $matches[1].Trim()
+                } else {
+                    $errorMessage = "Не удалось извлечь последнюю версию из объединенного вывода: $fullOutput"
+                    Write-OperationFailed -Operation "Check yt-dlp updates" -ErrorMessage $errorMessage -FunctionName "CheckUpdates"
+                    return New-ErrorResponse -ErrorMessage $errorMessage
+                }
+                
+                # Извлекаем INSTALLED версию отдельно для надежности
+                if ($fullOutput -match 'INSTALLED:\s*([^\s]+)') {
+                    $currentVersion = $matches[1].Trim()
+                } else {
+                    $errorMessage = "Не удалось извлечь установленную версию из объединенного вывода: $fullOutput"
+                    Write-OperationFailed -Operation "Check yt-dlp updates" -ErrorMessage $errorMessage -FunctionName "CheckUpdates"
+                    return New-ErrorResponse -ErrorMessage $errorMessage
+                }
                 Write-PSFMessage -Level Debug -FunctionName "CheckUpdates" -Message "currentVersion: $currentVersion"
                 Write-PSFMessage -Level Debug -FunctionName "CheckUpdates" -Message "latestVersion: $latestVersion"
                 $needsUpdate = $currentVersion -ne $latestVersion
