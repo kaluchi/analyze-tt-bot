@@ -33,7 +33,7 @@ function Get-Choco-List {
     
     try {
         # Выполняем команду choco list
-        $result = Invoke-ExternalProcess -ExecutablePath "choco" -ArgumentList @("list") -TimeoutSeconds 30
+        $result = Invoke-ExternalProcess -ExecutablePath "choco" -ArgumentList @("list") -TimeoutSeconds 3
         
         if (-not $result.Success) {
             Write-PSFMessage -Level Warning -FunctionName "Get-Choco-List" -Message "Failed to get package list. Error: $($result.Error)"
@@ -95,7 +95,7 @@ function Get-Choco-Outdated {
     
     try {
         # Выполняем команду choco outdated
-        $result = Invoke-ExternalProcess -ExecutablePath "choco" -ArgumentList @("outdated") -TimeoutSeconds 30
+        $result = Invoke-ExternalProcess -ExecutablePath "choco" -ArgumentList @("outdated") -TimeoutSeconds 3
         
         if (-not $result.Success) {
             Write-PSFMessage -Level Warning -FunctionName "Get-Choco-Outdated" -Message "Failed to get outdated packages. Error: $($result.Error)"

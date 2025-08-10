@@ -207,6 +207,14 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
                     }
                 )
             }
+            Mock Get-Choco-List -ModuleName AnalyzeTTBot -MockWith {
+                return @(
+                    [PSCustomObject]@{
+                        Name = "mediainfo-cli"
+                        Version = "25.03.0"
+                    }
+                )
+            }
             
             # Вызываем тестируемый метод
             $result = $mediaInfoService.TestMediaInfoDependency([switch]$false)

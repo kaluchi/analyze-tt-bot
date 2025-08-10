@@ -96,7 +96,13 @@ class MediaInfoExtractorService : IMediaInfoExtractorService {
         # Преобразуем строковые числа в числовые значения, где это необходимо
         $videoWidth = if ($videoTrack.Width) { [int]$videoTrack.Width } else { 0 }
         $videoHeight = if ($videoTrack.Height) { [int]$videoTrack.Height } else { 0 }
-        $videoBitRate = if ($videoTrack.BitRate) { [int]$videoTrack.BitRate } else { 0 }
+        $videoBitRate = 0
+        if ($videoTrack.BitRate) {
+            $bitRateStr = "$($videoTrack.BitRate)"
+            if ($bitRateStr -match '^(\d+)') {
+                $videoBitRate = [int]$matches[1]
+            }
+        }
         $videoFPS = if ($videoTrack.FrameRate) { [float]$videoTrack.FrameRate } else { 0 }
         $videoFrameCount = if ($videoTrack.FrameCount) { [int]$videoTrack.FrameCount } else { 0 }
         
@@ -123,9 +129,14 @@ class MediaInfoExtractorService : IMediaInfoExtractorService {
         
         # Добавляем информацию об аудио, если оно есть
         if ($audioTrack) {
-            $audioBitRate = if ($audioTrack.BitRate) { [int]$audioTrack.BitRate } else { 0 }
+            $audioBitRate = 0
+            if ($audioTrack.BitRate) {
+                $audioBitRateStr = "$($audioTrack.BitRate)"
+                if ($audioBitRateStr -match '^(\d+)') {
+                    $audioBitRate = [int]$matches[1]
+                }
+            }
             $audioSampleRate = if ($audioTrack.SamplingRate) { [int]$audioTrack.SamplingRate } else { 0 }
-            
             $result.AudioCodec = $audioTrack.Format
             $result.AudioChannels = if ($audioTrack.Channels) { [int]$audioTrack.Channels } else { 0 }
             $result.AudioBitRate = $audioBitRate
