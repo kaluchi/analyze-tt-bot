@@ -89,8 +89,86 @@ Get-ChildItem -Path "$script:ModuleRoot\Services" -Filter "*.ps1" | Sort-Object 
 
 # Инициализация модуля
 try {
-    # Загружаем централизованную конфигурацию
-    . "$script:ModuleRoot\Config\Initialize-Configuration.ps1"
+    # Централизованная инициализация конфигурации (встроенно из Initialize-Configuration.ps1)
+    
+    # Определяем директорию конфигурации
+    $configDir = "$script:ModuleRoot\Config"
+    
+    # Создаем массив конфигурационных файлов в порядке загрузки
+    $configFiles = @(
+        "LoggingConfig.ps1",     # Сначала инициализируем логирование
+        "TelegramConfig.ps1",    # Затем основные компоненты
+        "MediaConfig.ps1",
+        "YtDlpConfig.ps1"
+    )
+    
+    # 1. Загружаем базовые конфигурационные файлы
+    $loadedConfigs = @()
+    foreach ($configFile in $configFiles) {
+        $configFilePath = Join-Path -Path $configDir -ChildPath $configFile
+        
+        # Встроенная логика загрузки конфигурационного файла
+        if (Test-Path -Path $configFilePath) {
+            try {
+                Write-PSFMessage -Level Debug -Message "Загрузка конфигурации: $configFilePath"
+                . $configFilePath
+                $loadedConfigs += $configFile
+            }
+            catch {
+                Write-PSFMessage -Level Debug -Message "Ошибка при загрузке конфигурационного файла $configFilePath : $_"
+            }
+        }
+        else {
+            Write-PSFMessage -Level Debug -Message "Файл конфигурации не найден: $configFilePath"
+        }
+    }
+    
+    Write-PSFMessage -Level Debug -Message "Загружено $($loadedConfigs.Count) из $($configFiles.Count) конфигурационных файлов"
+    
+    # 2. Регистрация провайдера логирования
+    $loggingEnabled = Get-PSFConfigValue -FullName "AnalyzeTTBot.Logging.Enabled" -Fallback $true
+        
+    if ($loggingEnabled) {
+        $logPath = Get-PSFConfigValue -FullName "AnalyzeTTBot.Logging.Path" -Fallback "$env:TEMP\AnalyzeTTBot\logs"
+        $fileFormat = Get-PSFConfigValue -FullName "AnalyzeTTBot.Logging.FileFormat" -Fallback "%date%.log"
+        $timeFormat = Get-PSFConfigValue -FullName "AnalyzeTTBot.Logging.TimeFormat" -Fallback "yyyy-MM-dd HH:mm:ss.fff"
+        
+        # Параметры для провайдера логирования
+        $loggingParams = @{
+            Name          = 'logfile'
+            InstanceName  = 'AnalyzeTTBot'
+            Enabled       = $true
+            FilePath      = Join-Path -Path $logPath -ChildPath $fileFormat
+            FileType      = 'SingleFile'
+            TimeFormat    = $timeFormat
+            LogRotatePath = $logPath
+        }
+        
+        # Регистрируем провайдер логирования
+        try {
+            Set-PSFLoggingProvider @loggingParams
+            Write-PSFMessage -Level Debug -Message "Провайдер логирования зарегистрирован: $logPath" 
+        }
+        catch {
+            Write-Warning "Ошибка при регистрации провайдера логирования: $_"
+        }
+    }
+    else {
+        Write-PSFMessage -Level Debug -Message  "Логирование отключено в конфигурации"
+    }
+    
+    # 3. Дополнительная информация для режима отладки
+    $debugMode = $DebugPreference -ne "SilentlyContinue" -or $PSBoundParameters.ContainsKey('Debug')
+    
+    if ($debugMode) {
+        Write-PSFMessage -Level Debug -Message "Активирован режим отладки в конфигурации"
+    }
+    
+    # Информация о результате инициализации конфигурации
+    $configInitResult = [PSCustomObject]@{
+        ConfigFilesLoaded = $loadedConfigs
+        DebugMode = $debugMode
+    }
     
     # Регистрируем сервисы в контейнере зависимостей
     $registered = Register-DependencyServices -ClearContainer
