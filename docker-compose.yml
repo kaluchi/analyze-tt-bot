@@ -22,6 +22,9 @@ services:
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-test_token}
       - LOG_LEVEL=Verbose
+      - YT_DLP_COOKIES_FILE=/app/cookies/cookies.txt
+    volumes:
+      - "${YT_DLP_COOKIES_FILE:-./cookies/cookies.txt}:/app/cookies/cookies.txt:rw"
   
 
   # Сборка базового образа для тестирования

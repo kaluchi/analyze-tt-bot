@@ -9,10 +9,10 @@ RUN apt-get update && apt-get install -y \
     wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && pip3 install yt-dlp==2025.7.21 \
+    && pip3 install yt-dlp==2025.8.11 \
     && pwsh -Command "Install-Module -Name PSFramework -Force -MinimumVersion 1.12.346 -Scope AllUsers -AllowClobber -SkipPublisherCheck -Repository PSGallery" \
-    && mkdir -p /app/logs /app/temp \
-    && chmod -R 777 /app/temp /app/logs
+    && mkdir -p /app/logs /app/temp /app/cookies \
+    && chmod -R 777 /app/temp /app/logs /app/cookies
 
 # Создание рабочей директории
 WORKDIR /app

@@ -62,11 +62,28 @@ $ytdlpFormatConfig = @{
 Set-PSFConfig @ytdlpFormatConfig | Register-PSFConfig
 
 # Путь к файлу cookies для аутентификации
+# Проверяем наличие переменной окружения YT_DLP_COOKIES_FILE
+Write-PSFMessage -Level Verbose -Message "Проверка наличия переменной окружения YT_DLP_COOKIES_FILE"
+
+# Используем переменную окружения, если она задана
+$ytdlpCookiesPath = if ($env:YT_DLP_COOKIES_FILE) {
+    $env:YT_DLP_COOKIES_FILE  # Используем переменную окружения
+} else {
+    "./cookies/cookies.txt"  # Значение по умолчанию (dummy файл)
+}
+
+# Проверяем, была ли задана переменная окружения
+if ($env:YT_DLP_COOKIES_FILE) {
+    Write-PSFMessage -Level Verbose -Message "Переменная окружения YT_DLP_COOKIES_FILE найдена и будет использована: $env:YT_DLP_COOKIES_FILE"
+} else {
+    Write-PSFMessage -Level Verbose -Message "Переменная окружения YT_DLP_COOKIES_FILE не задана, используется fallback: ./cookies/cookies.txt"
+}
+
 $ytdlpCookiesConfig = @{
     Module          = "AnalyzeTTBot"
     Name            = "YtDlp.CookiesPath"
-    Value           = "./cookies/cookies.txt"
-    Description     = "Путь к файлу cookies для аутентификации в yt-dlp. Оставьте пустым для работы без cookies."
+    Value           = $ytdlpCookiesPath
+    Description     = "Путь к файлу cookies для аутентификации в yt-dlp. Используйте YT_DLP_COOKIES_FILE для переопределения."
     Validation      = "string"
     Initialize      = $true
     ModuleExport    = $false

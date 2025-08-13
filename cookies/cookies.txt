@@ -1,37 +1,42 @@
-# This is a dummy cookies file for TikTok video downloads
+# Netscape HTTP Cookie File
+# This is a dummy cookies file for TikTok Analyzer Bot
 # 
-# To use real cookies for TikTok authentication:
+# This file contains only instructions and will be ignored by yt-dlp.
+# To enable TikTok cookies authentication, you have two options:
 #
-# 1. Export cookies from your browser using extensions:
-#    - Chrome: \"Get cookies.txt LOCALLY\" extension
-#    - Firefox: \"cookies.txt\" extension
-#    - Edge: \"Get cookies.txt LOCALLY\" extension
+# OPTION 1: Use environment variable (recommended)
+# Set YT_DLP_COOKIES_FILE to point to your real cookies file:
+#   Windows: $env:YT_DLP_COOKIES_FILE = "C:\path\to\your\real_cookies.txt"
+#   Linux:   export YT_DLP_COOKIES_FILE="/path/to/your/real_cookies.txt"
+#   Docker:  YT_DLP_COOKIES_FILE=/host/path/cookies.txt docker-compose up
 #
-# 2. Option A - Replace this file:
-#    Copy your real cookies.txt content here, replacing these comments
+# OPTION 2: Replace this file
+# Replace this dummy file with your real cookies file exported from browser
 #
-# 3. Option B - Use environment variable (recommended):
-#    Set YT_DLP_COOKIES_FILE to point to your real cookies file:
-#    
-#    Windows PowerShell:
-#    $env:YT_DLP_COOKIES_FILE = \"C:\\path\	o\\your\\real_cookies.txt\"
-#    
-#    Windows CMD:
-#    set YT_DLP_COOKIES_FILE=C:\\path\	o\\your\\real_cookies.txt
-#    
-#    Linux/macOS:
-#    export YT_DLP_COOKIES_FILE=\"/path/to/your/real_cookies.txt\"
+# HOW TO GET REAL COOKIES:
+# 1. Install browser extension:
+#    - Chrome: "Get cookies.txt LOCALLY" extension
+#    - Firefox: "cookies.txt" extension
+#    - Edge: "Get cookies.txt LOCALLY" extension
 #
-# 4. Cookie format (tab-separated values):
-#    domain	flag	path	secure	expiration	name	value
-#    .tiktok.com	TRUE	/	FALSE	1677649200	sessionid	your_session_here
-#    .tiktok.com	TRUE	/	FALSE	1677649200	csrf_token	your_csrf_token_here
+# 2. Visit tiktok.com and log in to your account
 #
-# Security notes:
-# - Keep cookies files private (chmod 600 on Unix systems)
-# - Rotate cookies regularly (monthly recommended)
-# - Never commit real cookies to version control
-# - Use different cookies for testing vs production
+# 3. Use extension to export cookies in Netscape format
 #
-# This dummy file will be ignored by yt-dlp since it contains no valid cookie data.
-# The bot will work without authentication but may encounter rate limits or geo-blocks.
+# 4. Save exported cookies to a file (e.g., my_tiktok_cookies.txt)
+#
+# 5. Set environment variable or replace this file
+#
+# SECURITY NOTES:
+# - Never share your cookies file - it contains your login session
+# - Rotate cookies every 30 days for security
+# - Set file permissions to 600 (read/write owner only)
+# - Keep cookies file outside of Git repository
+#
+# COOKIES FORMAT EXAMPLE (Netscape format):
+# domain	flag	path	secure	expiration	name	value
+# .tiktok.com	TRUE	/	FALSE	1677649200	sessionid	your_session_here
+# .tiktok.com	TRUE	/	TRUE	1677649200	sid_tt	your_sid_value_here
+#
+# This dummy file will be ignored by yt-dlp as it contains only comments.
+# Bot will work without authentication, but may have limited access to some videos.
