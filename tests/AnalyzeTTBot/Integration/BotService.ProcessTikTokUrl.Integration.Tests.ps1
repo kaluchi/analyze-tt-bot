@@ -108,7 +108,8 @@ Describe "BotService.ProcessTikTokUrl Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""  # cookiesPath - пустая строка для интеграционного теста
                 )
                 $mediaInfoExtractorService = [MediaInfoExtractorService]::new($fileSystemService)
                 $mediaFormatterService = [MediaFormatterService]::new()
