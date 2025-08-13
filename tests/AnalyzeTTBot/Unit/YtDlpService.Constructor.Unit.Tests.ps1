@@ -36,11 +36,12 @@ Describe "YtDlpService.Constructor Tests" {
         It "Should create an instance with correct properties" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 $ytDlpService.YtDlpPath | Should -Be "yt-dlp"
                 $ytDlpService.FileSystemService | Should -Be $mockFileSystemService
                 $ytDlpService.TimeoutSeconds | Should -Be 30
                 $ytDlpService.DefaultFormat | Should -Be "best"
+                $ytDlpService.CookiesPath | Should -Be ""
             }
         }
     }

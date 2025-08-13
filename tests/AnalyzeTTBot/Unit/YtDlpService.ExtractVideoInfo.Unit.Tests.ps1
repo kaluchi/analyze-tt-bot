@@ -47,7 +47,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Создаем тестовый JSON-контент
             $jsonContent = @{
@@ -76,7 +76,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Создаем тестовый JSON-контент без uploader
             $jsonContent = @{
@@ -105,7 +105,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Создаем тестовый JSON-контент без uploader и uploader_id
             $jsonContent = @{
@@ -134,7 +134,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Создаем тестовый JSON-контент без uploader, uploader_id и creator
             $jsonContent = @{
@@ -163,7 +163,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Создаем тестовый JSON-контент с channel_id
             $jsonContent = @{
@@ -192,7 +192,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Создаем тестовый JSON-контент с extractor_key
             $jsonContent = @{
@@ -222,7 +222,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Создаем тестовый JSON-контент без информации об авторе
             $jsonContent = @{
@@ -250,7 +250,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Создаем тестовый JSON-контент без информации об авторе
             $jsonContent = @{
@@ -278,7 +278,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Создаем тестовый JSON-контент с полным URL
             $jsonContent = @{
@@ -307,7 +307,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # URL для теста
             $url = "https://www.tiktok.com/@fallback_username/video/1234567890"
@@ -329,7 +329,7 @@ Describe 'YtDlpService.ExtractVideoInfo method' {
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name GetTempFolderPath -Value { return "C:\\Temp\\TestFolder" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name NewTempFileName -Value { param($extension) return "C:\\Temp\\TestFolder\\test.mp4" } -Force
             $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Создаем тестовый JSON-контент с некорректным значением NA
             $jsonContent = @{

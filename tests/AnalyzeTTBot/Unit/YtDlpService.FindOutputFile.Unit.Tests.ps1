@@ -32,7 +32,7 @@ Describe 'YtDlpService.FindOutputFile method' {
                 Mock Write-PSFMessage { }
                 
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Act
                 $result = $ytDlpService.FindOutputFile("C:\nonexistent_dir\video.mp4")
@@ -53,7 +53,7 @@ Describe 'YtDlpService.FindOutputFile method' {
                 Mock Write-PSFMessage { }
                 
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Act
                 $result = $ytDlpService.FindOutputFile("C:\existing_dir\video.mp4")
@@ -88,7 +88,7 @@ Describe 'YtDlpService.FindOutputFile method' {
                 Mock Write-PSFMessage { }
                 
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Act
                 $result = $ytDlpService.FindOutputFile("C:\existing_dir\video.mp4")
@@ -123,7 +123,7 @@ Describe 'YtDlpService.FindOutputFile method' {
                 Mock Write-PSFMessage { }
                 
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Act
                 $result = $ytDlpService.FindOutputFile("C:\existing_dir\video.mp4")
@@ -137,3 +137,4 @@ Describe 'YtDlpService.FindOutputFile method' {
         }
     }
 }
+

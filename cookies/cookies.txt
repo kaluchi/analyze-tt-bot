@@ -1,0 +1,37 @@
+# This is a dummy cookies file for TikTok video downloads
+# 
+# To use real cookies for TikTok authentication:
+#
+# 1. Export cookies from your browser using extensions:
+#    - Chrome: \"Get cookies.txt LOCALLY\" extension
+#    - Firefox: \"cookies.txt\" extension
+#    - Edge: \"Get cookies.txt LOCALLY\" extension
+#
+# 2. Option A - Replace this file:
+#    Copy your real cookies.txt content here, replacing these comments
+#
+# 3. Option B - Use environment variable (recommended):
+#    Set YT_DLP_COOKIES_FILE to point to your real cookies file:
+#    
+#    Windows PowerShell:
+#    $env:YT_DLP_COOKIES_FILE = \"C:\\path\	o\\your\\real_cookies.txt\"
+#    
+#    Windows CMD:
+#    set YT_DLP_COOKIES_FILE=C:\\path\	o\\your\\real_cookies.txt
+#    
+#    Linux/macOS:
+#    export YT_DLP_COOKIES_FILE=\"/path/to/your/real_cookies.txt\"
+#
+# 4. Cookie format (tab-separated values):
+#    domain	flag	path	secure	expiration	name	value
+#    .tiktok.com	TRUE	/	FALSE	1677649200	sessionid	your_session_here
+#    .tiktok.com	TRUE	/	FALSE	1677649200	csrf_token	your_csrf_token_here
+#
+# Security notes:
+# - Keep cookies files private (chmod 600 on Unix systems)
+# - Rotate cookies regularly (monthly recommended)
+# - Never commit real cookies to version control
+# - Use different cookies for testing vs production
+#
+# This dummy file will be ignored by yt-dlp since it contains no valid cookie data.
+# The bot will work without authentication but may encounter rate limits or geo-blocks.

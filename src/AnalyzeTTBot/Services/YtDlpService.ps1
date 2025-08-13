@@ -13,17 +13,20 @@ class YtDlpService : IYtDlpService {
     [IFileSystemService]$FileSystemService
     [int]$TimeoutSeconds
     [string]$DefaultFormat
+    [string]$CookiesPath
     
     YtDlpService(
         [string]$ytDlpPath,
         [IFileSystemService]$fileSystemService,
         [int]$timeoutSeconds,
-        [string]$defaultFormat
+        [string]$defaultFormat,
+        [string]$cookiesPath
     ) {
         $this.YtDlpPath = $ytDlpPath
         $this.FileSystemService = $fileSystemService
         $this.TimeoutSeconds = $timeoutSeconds
         $this.DefaultFormat = $defaultFormat
+        $this.CookiesPath = $cookiesPath
         
         Write-OperationSucceeded -Operation "YtDlpService initialization" -Details "yt-dlp path: $ytDlpPath" -FunctionName "YtDlpService.Constructor"
     }
@@ -131,6 +134,12 @@ class YtDlpService : IYtDlpService {
                 "--no-warnings",
                 $url
             )
+            
+            # Добавляем cookies если путь указан и файл существует
+            if (-not [string]::IsNullOrWhiteSpace($this.CookiesPath) -and (Test-Path $this.CookiesPath)) {
+                $arguments += @("--cookies", $this.CookiesPath)
+                Write-PSFMessage -Level Debug -FunctionName "ExecuteYtDlp" -Message "Using cookies file: $($this.CookiesPath)"
+            }
             
             # Запускаем yt-dlp через ProcessHelper
             $result = Invoke-ExternalProcess -ExecutablePath $this.YtDlpPath -ArgumentList $arguments -TimeoutSeconds $this.TimeoutSeconds

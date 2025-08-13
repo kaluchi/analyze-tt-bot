@@ -29,7 +29,7 @@ Describe 'YtDlpService.ExecuteYtDlp network errors' {
             Mock Write-OperationFailed { } -ModuleName AnalyzeTTBot
             
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 1, "best") # Короткий таймаут
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 1, "best", "") # Короткий таймаут
             
             # Мокаем Invoke-ExternalProcess для симуляции таймаута
             Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
@@ -58,7 +58,7 @@ Describe 'YtDlpService.ExecuteYtDlp network errors' {
             Mock Write-OperationFailed { } -ModuleName AnalyzeTTBot
             
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Мокаем Invoke-ExternalProcess для симуляции отсутствия сети
             Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
@@ -85,7 +85,7 @@ Describe 'YtDlpService.ExecuteYtDlp network errors' {
             Mock Write-OperationFailed { } -ModuleName AnalyzeTTBot
             
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Мокаем Invoke-ExternalProcess для симуляции HTTP ошибки
             Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
@@ -104,3 +104,4 @@ Describe 'YtDlpService.ExecuteYtDlp network errors' {
         }
     }
 }
+

@@ -43,7 +43,7 @@ Describe 'YtDlpService.CheckUpdates Error Handling Tests' {
                 Mock Write-PSFMessage { }
                 
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Act
                 $result = $ytDlpService.CheckUpdates()
@@ -77,7 +77,7 @@ Describe 'YtDlpService.CheckUpdates Error Handling Tests' {
                 Mock Write-PSFMessage { }
                 
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Act
                 $result = $ytDlpService.CheckUpdates()
@@ -104,7 +104,7 @@ Describe 'YtDlpService.CheckUpdates Error Handling Tests' {
                 
                 $mockFileSystemService = [IFileSystemService]::new()
                 $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService,
-                30, "best")
+                30, "best", "")
                 
                 # Act
                 $result = $ytDlpService.CheckUpdates()
@@ -140,7 +140,7 @@ Describe 'YtDlpService.CheckUpdates Error Handling Tests' {
                 Mock Write-PSFMessage { }
                 
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Act
                 $result = $ytDlpService.CheckUpdates()
@@ -170,7 +170,7 @@ Describe 'YtDlpService.CheckUpdates Error Handling Tests' {
                 Mock Write-PSFMessage { }
                 
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Act
                 $result = $ytDlpService.CheckUpdates()

@@ -44,7 +44,7 @@ Describe 'YtDlpService.ProcessMetadata method' {
         InModuleScope AnalyzeTTBot {
             # Создаем сервис с моками
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Мокаем метод GetPossibleJsonPaths для возврата тестовых путей
             $ytDlpService | Add-Member -MemberType ScriptMethod -Name GetPossibleJsonPaths -Value {
@@ -99,7 +99,7 @@ Describe 'YtDlpService.ProcessMetadata method' {
         InModuleScope AnalyzeTTBot {
             # Создаем сервис с моками
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Мокаем метод GetPossibleJsonPaths
             $ytDlpService | Add-Member -MemberType ScriptMethod -Name GetPossibleJsonPaths -Value {
@@ -150,7 +150,7 @@ Describe 'YtDlpService.ProcessMetadata method' {
         InModuleScope AnalyzeTTBot {
             # Создаем сервис с моками
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Мокаем метод GetPossibleJsonPaths
             $ytDlpService | Add-Member -MemberType ScriptMethod -Name GetPossibleJsonPaths -Value {
@@ -205,7 +205,7 @@ Describe 'YtDlpService.ProcessMetadata method' {
         InModuleScope AnalyzeTTBot {
             # Создаем сервис с моками
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Мокаем метод GetPossibleJsonPaths
             $ytDlpService | Add-Member -MemberType ScriptMethod -Name GetPossibleJsonPaths -Value {
@@ -260,7 +260,7 @@ Describe 'YtDlpService.ProcessMetadata method' {
         InModuleScope AnalyzeTTBot {
             # Создаем сервис с моками
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Мокаем метод GetPossibleJsonPaths для имитации исключения
             $ytDlpService | Add-Member -MemberType ScriptMethod -Name GetPossibleJsonPaths -Value {
@@ -282,7 +282,7 @@ Describe 'YtDlpService.ProcessMetadata method' {
         InModuleScope AnalyzeTTBot {
             # Создаем сервис с моками
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Мокаем метод GetPossibleJsonPaths
             $ytDlpService | Add-Member -MemberType ScriptMethod -Name GetPossibleJsonPaths -Value {

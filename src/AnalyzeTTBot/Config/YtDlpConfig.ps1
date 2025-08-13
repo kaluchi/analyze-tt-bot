@@ -61,4 +61,17 @@ $ytdlpFormatConfig = @{
 }
 Set-PSFConfig @ytdlpFormatConfig | Register-PSFConfig
 
+# Путь к файлу cookies для аутентификации
+$ytdlpCookiesConfig = @{
+    Module          = "AnalyzeTTBot"
+    Name            = "YtDlp.CookiesPath"
+    Value           = "./cookies/cookies.txt"
+    Description     = "Путь к файлу cookies для аутентификации в yt-dlp. Оставьте пустым для работы без cookies."
+    Validation      = "string"
+    Initialize      = $true
+    ModuleExport    = $false
+    PassThru        = $true
+}
+Set-PSFConfig @ytdlpCookiesConfig | Register-PSFConfig
+
 Write-PSFMessage -Level Verbose -Message "Конфигурация yt-dlp инициализирована"

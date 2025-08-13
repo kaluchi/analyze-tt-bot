@@ -30,7 +30,7 @@ Describe 'YtDlpService.FindAndReadJsonMetadata method' {
         InModuleScope AnalyzeTTBot {
             # Arrange
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
 
             # Мокаем CreateBaseJsonContent для предсказуемого результата
             $ytDlpService | Add-Member -MemberType ScriptMethod -Name CreateBaseJsonContent -Value {
@@ -61,7 +61,7 @@ Describe 'YtDlpService.FindAndReadJsonMetadata method' {
     It 'Создаёт базовый JSON, если файл не найден и Read-JsonFile возвращает $null' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             # Мокаем Test-Path для возврата $false
             Mock -CommandName Test-Path -ModuleName AnalyzeTTBot -MockWith { return $false }
             # Мокаем Read-JsonFile для возврата $null
@@ -76,3 +76,4 @@ Describe 'YtDlpService.FindAndReadJsonMetadata method' {
         }
     }
 }
+

@@ -25,7 +25,7 @@ Describe 'YtDlpService.ExecuteYtDlp method' {
     It 'Возвращает ошибку, если yt-dlp завершился с ошибкой' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
                 return @{ Success = $false; ExitCode = 1; Output = @('error'); Error = 'fail' }
             }
@@ -40,7 +40,7 @@ Describe 'YtDlpService.ExecuteYtDlp method' {
     It 'Возвращает ошибку, если в выводе yt-dlp есть ERROR:' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
                 return @{ Success = $true; ExitCode = 0; Output = @('ERROR: something bad happened'); Error = '' }
             }
@@ -54,7 +54,7 @@ Describe 'YtDlpService.ExecuteYtDlp method' {
     It 'Возвращает ошибку при исключении' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
                 throw "Test exception"
             }
@@ -73,7 +73,7 @@ Describe 'YtDlpService.ExecuteYtDlp method' {
             Mock -CommandName Get-ChildItem -ModuleName AnalyzeTTBot -MockWith { @() }
             Mock -CommandName Test-Path -ModuleName AnalyzeTTBot -MockWith { $true }
             Mock -CommandName Remove-Item -ModuleName AnalyzeTTBot -MockWith { $null }
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             Mock -CommandName Read-JsonFile -ModuleName AnalyzeTTBot -MockWith { $null }
             Mock -CommandName Write-JsonFile -ModuleName AnalyzeTTBot -MockWith { $null }
             $result = $ytDlpService.SaveTikTokVideo('https://tiktok.com/video/err', 'output.mp4')
@@ -84,7 +84,7 @@ Describe 'YtDlpService.ExecuteYtDlp method' {
     It 'Должен возвращать ошибку при ошибке обновления yt-dlp (UpdateYtDlp)' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
                 return @{ Success = $false; ExitCode = 1; Output = @('fail'); Error = 'fail' }
             }
@@ -96,7 +96,7 @@ Describe 'YtDlpService.ExecuteYtDlp method' {
     It 'Должен возвращать ошибку при неожиданном выводе UpdateYtDlp' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
                 return @{ Success = $true; ExitCode = 0; Output = @('Some unknown output'); Error = '' }
             }
@@ -108,7 +108,7 @@ Describe 'YtDlpService.ExecuteYtDlp method' {
     It 'Должен возвращать ошибку при ошибке CheckUpdates' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
                 return @{ Success = $false; ExitCode = 1; Output = @('fail'); Error = 'fail' }
             }
@@ -120,7 +120,7 @@ Describe 'YtDlpService.ExecuteYtDlp method' {
     It 'Должен возвращать ошибку при ошибке TestYtDlpInstallation' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
                 return @{ Success = $false; ExitCode = 1; Output = @('fail'); Error = 'fail' }
             }
@@ -130,3 +130,4 @@ Describe 'YtDlpService.ExecuteYtDlp method' {
         }
     }
 }
+

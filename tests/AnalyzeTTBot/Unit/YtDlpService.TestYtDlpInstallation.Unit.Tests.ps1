@@ -36,7 +36,7 @@ Describe "YtDlpService.TestYtDlpInstallation Tests" {
         It "Should detect yt-dlp installation correctly" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $true; Output = "2025.03.26"; Error = ""; ExitCode = 0 }
                 } -ParameterFilter { $ArgumentList -contains "--version" }
@@ -56,7 +56,7 @@ Describe "YtDlpService.TestYtDlpInstallation Tests" {
         It "Should detect yt-dlp installation correctly (with and without SkipCheckUpdates)" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $true; Output = "2025.03.26"; Error = ""; ExitCode = 0 }
                 } -ParameterFilter { $ArgumentList -contains "--version" }
@@ -89,7 +89,7 @@ Describe "YtDlpService.TestYtDlpInstallation Tests" {
         It "Should detect yt-dlp installation correctly (with and without SkipCheckUpdates, all fields)" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $true; Output = "2025.03.26"; Error = ""; ExitCode = 0 }
                 } -ParameterFilter { $ArgumentList -contains "--version" }
@@ -150,7 +150,7 @@ Describe "YtDlpService.TestYtDlpInstallation Tests" {
         It "Should handle missing yt-dlp" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $false; Output = ""; Error = "Command not found: yt-dlp"; ExitCode = 1 }
                 } -ParameterFilter { $ArgumentList -contains "--version" }
@@ -165,7 +165,7 @@ Describe "YtDlpService.TestYtDlpInstallation Tests" {
         It "Should handle exception during test" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 Mock Invoke-ExternalProcess { throw "Test exception" } -ParameterFilter { $ArgumentList -contains "--version" }
                 $result = $ytDlpService.TestYtDlpInstallation($null)
                 $result.Success | Should -BeFalse
@@ -177,7 +177,7 @@ Describe "YtDlpService.TestYtDlpInstallation Tests" {
         It "Should return correct structure for success and error" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $true; Output = "2025.03.26"; Error = ""; ExitCode = 0 }
                 } -ParameterFilter { $ArgumentList -contains "--version" }

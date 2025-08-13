@@ -68,7 +68,8 @@ Describe "YtDlpService.SaveTikTokVideo Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 $result = $ytDlpService.SaveTikTokVideo($config.ValidTikTokUrl, "")
@@ -111,7 +112,8 @@ Describe "YtDlpService.SaveTikTokVideo Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 $customOutputPath = Join-Path $TestTempPath "custom_video.mp4"

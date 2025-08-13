@@ -40,7 +40,7 @@ Describe "YtDlpService.SaveTikTokVideo Tests" {
                     param($path)
                     return @{ Success = $true }
                 } -Force
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 $ytDlpService | Add-Member -MemberType ScriptMethod -Name "ExecuteYtDlp" -Value {
                     param ($url, $outputPath)
                     return @{ Success = $true; Data = @{ RawOutput = @("Video downloaded successfully"); OutputPath = $outputPath } }
@@ -74,7 +74,7 @@ Describe "YtDlpService.SaveTikTokVideo Tests" {
                     return @{ Success = $true }
                 } -Force
                 
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 $ytDlpService | Add-Member -MemberType ScriptMethod -Name "ExecuteYtDlp" -Value {
                     param ($url, $outputPath)
                     return @{ Success = $true; Data = @{ RawOutput = @("Video downloaded successfully"); OutputPath = $outputPath } }
@@ -107,7 +107,7 @@ Describe "YtDlpService.SaveTikTokVideo Tests" {
                     return @{ Success = $true }
                 } -Force
                 
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 $ytDlpService | Add-Member -MemberType ScriptMethod -Name "ExecuteYtDlp" -Value {
                     param ($url, $outputPath)
                     return New-ErrorResponse -ErrorMessage "Error downloading video"
@@ -133,7 +133,7 @@ Describe "YtDlpService.SaveTikTokVideo Tests" {
                     return @{ Success = $true }
                 } -Force
                 
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 $ytDlpService | Add-Member -MemberType ScriptMethod -Name "ExecuteYtDlp" -Value {
                     param ($url, $outputPath)
                     return New-SuccessResponse -Data @{ RawOutput = @("Video downloaded successfully"); OutputPath = $outputPath }
@@ -153,7 +153,7 @@ Describe "YtDlpService.SaveTikTokVideo Tests" {
         It "Should handle empty URL" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 $result = $ytDlpService.SaveTikTokVideo("", "C:\temp\output.mp4")
                 $result.Success | Should -BeFalse
                 $result.Error | Should -Be "Empty URL provided"
@@ -178,7 +178,7 @@ Describe "YtDlpService.SaveTikTokVideo Tests" {
                 } -ModuleName AnalyzeTTBot
                 
                 # Создаем экземпляр сервиса с подготовленным моком
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Чтобы тест работал корректно, модифицируем SaveTikTokVideo для раннего выхода при ошибке директории
                 $ytDlpService | Add-Member -MemberType ScriptMethod -Name "SaveTikTokVideo" -Value {

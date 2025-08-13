@@ -30,7 +30,7 @@ Describe 'YtDlpService.CreateBaseJsonContent method' {
         InModuleScope AnalyzeTTBot {
             # Arrange
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
 
             # Мокаем ExtractUsernameFromUrl для предсказуемого результата
             $ytDlpService | Add-Member -MemberType ScriptMethod -Name ExtractUsernameFromUrl -Value {
@@ -53,3 +53,4 @@ Describe 'YtDlpService.CreateBaseJsonContent method' {
         }
     }
 }
+

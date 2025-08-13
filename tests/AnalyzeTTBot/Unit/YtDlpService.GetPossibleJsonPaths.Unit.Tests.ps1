@@ -25,7 +25,7 @@ Describe 'YtDlpService.GetPossibleJsonPaths method' {
     It 'Возвращает оба варианта путей к JSON' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             $outputPath = "C:\\temp\\video.mp4"
             $result = $ytDlpService.GetPossibleJsonPaths($outputPath)
             if ($result -isnot [System.Collections.IEnumerable] -or $result -is [string]) {
@@ -39,3 +39,4 @@ Describe 'YtDlpService.GetPossibleJsonPaths method' {
         }
     }
 }
+

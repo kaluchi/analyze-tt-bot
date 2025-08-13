@@ -25,7 +25,7 @@ Describe 'YtDlpService.ExtractUsernameFromUrl method' {
     It 'Корректно извлекает username из разных ссылок' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             $ytDlpService.ExtractUsernameFromUrl("https://www.tiktok.com/@testuser/video/1234567890") | Should -Be "testuser"
             $ytDlpService.ExtractUsernameFromUrl("https://tiktok.com/@another_user/video/987654321") | Should -Be "another_user"
             $ytDlpService.ExtractUsernameFromUrl("https://www.tiktok.com/@user123") | Should -Be "user123"
@@ -35,3 +35,4 @@ Describe 'YtDlpService.ExtractUsernameFromUrl method' {
         }
     }
 }
+

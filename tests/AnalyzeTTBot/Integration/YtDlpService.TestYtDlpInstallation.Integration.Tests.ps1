@@ -63,7 +63,8 @@ Describe "YtDlpService.TestYtDlpInstallation Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 # Проверка без проверки обновлений
@@ -89,7 +90,8 @@ Describe "YtDlpService.TestYtDlpInstallation Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 # Проверяем с опцией проверки обновлений (параметр switch по умолчанию $false)
@@ -119,7 +121,8 @@ Describe "YtDlpService.TestYtDlpInstallation Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 # Проверяем с пропуском проверки обновлений
@@ -146,7 +149,8 @@ Describe "YtDlpService.TestYtDlpInstallation Integration Tests" {
                     $nonExistentPath,
                     $fileSystemService,
                     30,
-                    "best"
+                    "best",
+                    ""
                 )
                 
                 $skipCheckUpdates = [switch]$true
@@ -168,7 +172,8 @@ Describe "YtDlpService.TestYtDlpInstallation Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 # Проверяем метод CheckUpdates напрямую
@@ -205,7 +210,8 @@ Describe "YtDlpService.TestYtDlpInstallation Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     1,  # 1 секунда - очень короткий таймаут
-                    "best"
+                    "best",
+                    ""
                 )
                 
                 # Пытаемся тестировать установку с коротким таймаутом
@@ -232,7 +238,8 @@ Describe "YtDlpService.TestYtDlpInstallation Integration Tests" {
                     "invalid_yt-dlp_path",
                     $fileSystemService,
                     30,
-                    "best"
+                    "best",
+                    ""
                 )
                 
                 $skipCheckUpdates = [switch]$true

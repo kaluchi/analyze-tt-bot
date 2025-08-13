@@ -101,6 +101,7 @@ function Register-DependencyServices {
     $ytDlpPath = Get-PSFConfigValue -FullName "AnalyzeTTBot.YtDlp.Path"
     $ytDlpTimeout = Get-PSFConfigValue -FullName "AnalyzeTTBot.YtDlp.Timeout"
     $ytDlpFormat = Get-PSFConfigValue -FullName "AnalyzeTTBot.YtDlp.Format"
+    $ytDlpCookiesPath = Get-PSFConfigValue -FullName "AnalyzeTTBot.YtDlp.CookiesPath"
     
     Write-PSFMessage -Level Verbose -FunctionName "Register-DependencyServices" -Message "Registering services in the dependency container"
     
@@ -114,7 +115,7 @@ function Register-DependencyServices {
         $telegramService = [TelegramService]::new($telegramToken, $maxFileSize)
         $script:Container.RegisterSingleton("ITelegramService", $telegramService)
         
-        $ytDlpService = [YtDlpService]::new($ytDlpPath, $fileSystemService, $ytDlpTimeout, $ytDlpFormat)
+        $ytDlpService = [YtDlpService]::new($ytDlpPath, $fileSystemService, $ytDlpTimeout, $ytDlpFormat, $ytDlpCookiesPath)
         $script:Container.RegisterSingleton("IYtDlpService", $ytDlpService)
         
         # Создаем новые специализированные сервисы для анализа медиа

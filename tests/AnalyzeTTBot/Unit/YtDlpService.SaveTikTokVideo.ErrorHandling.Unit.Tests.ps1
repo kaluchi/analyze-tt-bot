@@ -35,7 +35,7 @@ Describe 'YtDlpService.SaveTikTokVideo error handling' {
             } -Force
             
             # Создаем экземпляр YtDlpService
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             # Тестируем пустой URL
             $result = $ytDlpService.SaveTikTokVideo("", "")
@@ -61,7 +61,7 @@ Describe 'YtDlpService.SaveTikTokVideo error handling' {
                 return $false
             } -Force
             
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
             
             $result = $ytDlpService.SaveTikTokVideo("https://tiktok.com/video/123", "C:\test\output.mp4")
             
@@ -76,3 +76,4 @@ Describe 'YtDlpService.SaveTikTokVideo error handling' {
         }
     }
 }
+

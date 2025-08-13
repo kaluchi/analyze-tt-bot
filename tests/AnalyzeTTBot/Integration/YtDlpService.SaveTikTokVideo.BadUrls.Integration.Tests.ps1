@@ -63,7 +63,8 @@ Describe "YtDlpService.BadUrls Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 $invalidUrl = "not-a-url"
@@ -85,7 +86,8 @@ Describe "YtDlpService.BadUrls Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 $malformedUrl = "https://tiktok.com/bad/path/format"
@@ -107,7 +109,8 @@ Describe "YtDlpService.BadUrls Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 $result = $ytDlpService.SaveTikTokVideo("", "")
@@ -129,7 +132,8 @@ Describe "YtDlpService.BadUrls Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 # Искусственно создаем короткую ссылку, которая точно не существует
@@ -153,7 +157,8 @@ Describe "YtDlpService.BadUrls Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 # Создаем URL на видео, которое точно не существует
@@ -178,7 +183,8 @@ Describe "YtDlpService.BadUrls Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 $youtubeUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
@@ -211,7 +217,8 @@ Describe "YtDlpService.BadUrls Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     $Config.DownloadTimeout,
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 $badUrl = "https://tiktok.com/completely/invalid/path/structure"
@@ -239,7 +246,8 @@ Describe "YtDlpService.BadUrls Integration Tests" {
                     $Config.YtDlpPath,
                     $fileSystemService,
                     1, # Маленький таймаут для симуляции сетевых проблем
-                    $Config.DefaultFormat
+                    $Config.DefaultFormat,
+                    ""
                 )
                 
                 $result = $ytDlpService.SaveTikTokVideo("https://www.tiktok.com/@veryslowvideo/video/123456789", "")

@@ -36,7 +36,7 @@ Describe "YtDlpService.UpdateYtDlp Tests" {
         It "Should update yt-dlp successfully" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 Mock Invoke-ExternalProcess {
                     return @{ success = $true; Output = "yt-dlp is up to date (2025.03.26)"; Error = ""; ExitCode = 0 }
                 } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "-U" }
@@ -50,7 +50,7 @@ Describe "YtDlpService.UpdateYtDlp Tests" {
         It "Should handle update failures" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 Mock Invoke-ExternalProcess {
                     return @{ success = $false; Output = ""; Error = "Error updating yt-dlp"; ExitCode = 1 }
                 } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "-U" }
@@ -63,7 +63,7 @@ Describe "YtDlpService.UpdateYtDlp Tests" {
         It "Should report update successful when yt-dlp is updated" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 Mock Invoke-ExternalProcess {
                     return @{ success = $true; Output = "Updated yt-dlp to version 2025.04.01"; Error = ""; ExitCode = 0 }
                 } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "-U" }

@@ -36,7 +36,7 @@ Describe "YtDlpService.CheckUpdates Tests" {
         It "Should correctly detect when update is needed" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Мок Invoke-ExternalProcess с разными версиями
                 Mock Invoke-ExternalProcess {
@@ -65,7 +65,7 @@ Describe "YtDlpService.CheckUpdates Tests" {
         It "Should correctly detect when no update is needed (same version strings)" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
                 # Мок Invoke-ExternalProcess с одинаковыми версиями
                 Mock Invoke-ExternalProcess {
@@ -94,7 +94,7 @@ Describe "YtDlpService.CheckUpdates Tests" {
         It "Should handle missing INSTALLED and LATEST lines and use alternative method" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 # Мокируем только Invoke-ExternalProcess, не CheckUpdates!
                 Mock Invoke-ExternalProcess {
                     if ($ArgumentList -contains "versions") {
@@ -125,7 +125,7 @@ Describe "YtDlpService.CheckUpdates Tests" {
         It "Should handle identical versions returned by alternative method" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
-                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best")
+                $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 # Мокируем только Invoke-ExternalProcess, не CheckUpdates!
                 Mock Invoke-ExternalProcess {
                     if ($ArgumentList -contains "versions") {
