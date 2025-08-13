@@ -40,8 +40,12 @@ Describe "YtDlpService.TestYtDlpInstallation Extended Coverage Tests" {
                 $mockFileSystemService = [IFileSystemService]::new()
                 $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
-                # Мокируем Invoke-ExternalProcess для возврата null
-                Mock Invoke-ExternalProcess { return $null } -ModuleName AnalyzeTTBot
+                # Мокируем Invoke-ExternalProcess для возврата null С ParameterFilter
+                Mock Invoke-ExternalProcess { 
+                    return $null 
+                } -ModuleName AnalyzeTTBot -ParameterFilter { 
+                    $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "--version" 
+                }
                 
                 $result = $ytDlpService.TestYtDlpInstallation($null)
                 $result.Success | Should -BeFalse
@@ -54,10 +58,12 @@ Describe "YtDlpService.TestYtDlpInstallation Extended Coverage Tests" {
                 $mockFileSystemService = [IFileSystemService]::new()
                 $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
-                # Мокируем Invoke-ExternalProcess для возврата объекта без Success
+                # Мокируем Invoke-ExternalProcess для возврата объекта без Success С ParameterFilter
                 Mock Invoke-ExternalProcess { 
                     return @{ Output = "2025.03.26"; Error = ""; ExitCode = 0 } 
-                } -ModuleName AnalyzeTTBot
+                } -ModuleName AnalyzeTTBot -ParameterFilter { 
+                    $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "--version" 
+                }
                 
                 $result = $ytDlpService.TestYtDlpInstallation($null)
                 $result.Success | Should -BeFalse
@@ -72,7 +78,7 @@ Describe "YtDlpService.TestYtDlpInstallation Extended Coverage Tests" {
                 
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $true; Output = "2025.03.26"; Error = ""; ExitCode = 0 }
-                } -ParameterFilter { $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
+                } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
                 
                 # Мокируем CheckUpdates для возврата ошибки
                 $ytDlpService | Add-Member -MemberType ScriptMethod -Name "CheckUpdates" -Value {
@@ -97,7 +103,7 @@ Describe "YtDlpService.TestYtDlpInstallation Extended Coverage Tests" {
                 
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $true; Output = "2025.03.26"; Error = ""; ExitCode = 0 }
-                } -ParameterFilter { $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
+                } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
                 
                 # Тест 1: CheckUpdates возвращает null
                 $ytDlpService | Add-Member -MemberType ScriptMethod -Name "CheckUpdates" -Value {
@@ -124,19 +130,19 @@ Describe "YtDlpService.TestYtDlpInstallation Extended Coverage Tests" {
                 $mockFileSystemService = [IFileSystemService]::new()
                 $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
-                # Тест с exit code 127 (command not found)
+                # Тест с exit code 127 (command not found) С ParameterFilter
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $false; Output = ""; Error = "yt-dlp: command not found"; ExitCode = 127 }
-                } -ParameterFilter { $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
+                } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
                 
                 $result1 = $ytDlpService.TestYtDlpInstallation($null)
                 $result1.Success | Should -BeFalse
                 $result1.Error | Should -Match "yt-dlp returned error"
                 
-                # Тест с exit code 2 (other error)
+                # Тест с exit code 2 (other error) С ParameterFilter
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $false; Output = ""; Error = "Permission denied"; ExitCode = 2 }
-                } -ParameterFilter { $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
+                } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
                 
                 $result2 = $ytDlpService.TestYtDlpInstallation($null)
                 $result2.Success | Should -BeFalse
@@ -149,20 +155,20 @@ Describe "YtDlpService.TestYtDlpInstallation Extended Coverage Tests" {
                 $mockFileSystemService = [IFileSystemService]::new()
                 $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
-                # Тест с пустым выводом
+                # Тест с пустым выводом С ParameterFilter
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $true; Output = ""; Error = ""; ExitCode = 0 }
-                } -ParameterFilter { $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
+                } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
                 
                 $result1 = $ytDlpService.TestYtDlpInstallation($null)
                 $result1.Success | Should -BeTrue
                 $result1.Data.Version | Should -Be ""
                 $result1.Data.Description | Should -Match "Version  detected"
                 
-                # Тест с whitespace выводом
+                # Тест с whitespace выводом С ParameterFilter
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $true; Output = "   "; Error = ""; ExitCode = 0 }
-                } -ParameterFilter { $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
+                } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
                 
                 $result2 = $ytDlpService.TestYtDlpInstallation($null)
                 $result2.Success | Should -BeTrue
@@ -175,10 +181,10 @@ Describe "YtDlpService.TestYtDlpInstallation Extended Coverage Tests" {
                 $mockFileSystemService = [IFileSystemService]::new()
                 $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
                 
-                # Тест с многострочным выводом
+                # Тест с многострочным выводом С ParameterFilter
                 Mock Invoke-ExternalProcess {
                     return @{ Success = $true; Output = "2025.03.26`nAdditional info"; Error = ""; ExitCode = 0 }
-                } -ParameterFilter { $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
+                } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
                 
                 $ytDlpService | Add-Member -MemberType ScriptMethod -Name "CheckUpdates" -Value {
                     return New-SuccessResponse -Data @{ 

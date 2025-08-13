@@ -70,12 +70,12 @@ RequiredModules = @(@{ModuleName = 'PSFramework'; ModuleVersion = '1.7.272'; })
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Add-JsonProperty', 'ConvertFrom-JsonSafe', 'Copy-FileWithProgress', 
-               'Get-DependencyService', 'Get-EnsuredTempPath', 'Get-FileHash', 
+               'Get-EnsuredTempPath', 'Get-FileHash', 
                'Get-FolderSize', 'Get-SanitizedLogMessage', 
                'Initialize-AnalyzeTTBot', 'Invoke-ExternalProcess', 
                'New-ErrorResponse', 'New-JsonObject', 'New-ServiceResponse', 
                'New-SuccessResponse', 'New-TemporaryFilePath', 'Read-JsonFile', 
-               'Register-DependencyServices', 'Remove-OldFiles', 
+               'Remove-OldFiles', 
                'Remove-SensitiveInfo', 'Sanitize-PSFMessage', 'Start-AnalyzeTTBot', 
                'Test-CommandExists', 'Test-DirectoryExists', 
                'Update-JsonDictionaryProperty', 'Update-JsonFileProperty', 

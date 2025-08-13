@@ -28,7 +28,7 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
             $mockFileSystemService = [FileSystemService]::new("temp")
             $mediaInfoService = [MediaInfoExtractorService]::new($mockFileSystemService)
             
-            # Мокаем Invoke-ExternalProcess
+            # Мокаем Invoke-ExternalProcess для mediainfo
             Mock Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
                 return @{
                     Success = $true
@@ -40,9 +40,18 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
                 }
             } -ParameterFilter { $ExecutablePath -eq "mediainfo" -and $ArgumentList -contains "--version" }
             
-            # Мокаем Get-Choco-Outdated
+            # ПРАВИЛЬНО: Мокируем прямые зависимости
             Mock Get-Choco-Outdated -ModuleName AnalyzeTTBot -MockWith {
                 return @()
+            }
+            
+            Mock Get-Choco-List -ModuleName AnalyzeTTBot -MockWith {
+                return @(
+                    [PSCustomObject]@{
+                        Name = "mediainfo-cli"
+                        Version = "21.09.0"
+                    }
+                )
             }
             
             # Вызываем тестируемый метод
@@ -116,6 +125,20 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
             $mockFileSystemService = [FileSystemService]::new("temp")
             $mediaInfoService = [MediaInfoExtractorService]::new($mockFileSystemService)
             
+            # ПРАВИЛЬНО: Мокируем прямые зависимости
+            Mock Get-Choco-Outdated -ModuleName AnalyzeTTBot -MockWith {
+                return @()
+            }
+            
+            Mock Get-Choco-List -ModuleName AnalyzeTTBot -MockWith {
+                return @(
+                    [PSCustomObject]@{
+                        Name = "mediainfo-cli"
+                        Version = "21.09.0"
+                    }
+                )
+            }
+            
             # Тестовые случаи для разных версий MediaInfo
             $testCases = @(
                 @{ Output = "MediaInfo v22.03"; ExpectedVersion = "v22.03" }
@@ -168,6 +191,20 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
                     Command = "mediainfo --version"
                 }
             } -ParameterFilter { $ExecutablePath -eq "mediainfo" -and $ArgumentList -contains "--version" }
+            
+            # ПРАВИЛЬНО: Мокируем прямые зависимости
+            Mock Get-Choco-Outdated -ModuleName AnalyzeTTBot -MockWith {
+                return @()
+            }
+            
+            Mock Get-Choco-List -ModuleName AnalyzeTTBot -MockWith {
+                return @(
+                    [PSCustomObject]@{
+                        Name = "mediainfo-cli"
+                        Version = "25.03.0"
+                    }
+                )
+            }
 
             $result = $mediaInfoService.TestMediaInfoDependency($null)
 
@@ -184,7 +221,7 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
             $mockFileSystemService = [FileSystemService]::new("temp")
             $mediaInfoService = [MediaInfoExtractorService]::new($mockFileSystemService)
             
-            # Мокаем Invoke-ExternalProcess для успешного выполнения
+            # Мокаем Invoke-ExternalProcess для mediainfo
             Mock Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
                 return @{
                     Success = $true
@@ -196,7 +233,7 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
                 }
             } -ParameterFilter { $ExecutablePath -eq "mediainfo" -and $ArgumentList -contains "--version" }
             
-            # Мокаем Get-Choco-Outdated чтобы вернуть что MediaInfo устарел
+            # ПРАВИЛЬНО: Мокируем прямые зависимости
             Mock Get-Choco-Outdated -ModuleName AnalyzeTTBot -MockWith {
                 return @(
                     [PSCustomObject]@{
@@ -207,6 +244,7 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
                     }
                 )
             }
+            
             Mock Get-Choco-List -ModuleName AnalyzeTTBot -MockWith {
                 return @(
                     [PSCustomObject]@{
@@ -216,8 +254,8 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
                 )
             }
             
-            # Вызываем тестируемый метод
-            $result = $mediaInfoService.TestMediaInfoDependency([switch]$false)
+            # Вызываем тестируемый метод с ЯВНО указанным $false для SkipCheckUpdates
+            $result = $mediaInfoService.TestMediaInfoDependency($false)
             
             # Проверяем результат
             $result.Success | Should -BeTrue
@@ -261,7 +299,7 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
             $result.Data.SkipCheckUpdates | Should -BeTrue
             
             # Проверяем, что Get-Choco-Outdated не вызывался
-            Assert-MockCalled -CommandName Get-Choco-Outdated -ModuleName AnalyzeTTBot -Times 0 -Scope It
+            Assert-MockCalled -CommandName Get-Choco-Outdated -ModuleName AnalyzeTTBot -Exactly 0 -Scope It
         }
     }
 
@@ -285,6 +323,20 @@ Describe 'MediaInfoExtractorService.TestMediaInfoDependency method' {
                 $ExecutablePath -eq "mediainfo" -and 
                 $ArgumentList.Count -eq 1 -and 
                 $ArgumentList[0] -eq "--version" 
+            }
+            
+            # ПРАВИЛЬНО: Мокируем прямые зависимости
+            Mock Get-Choco-Outdated -ModuleName AnalyzeTTBot -MockWith {
+                return @()
+            }
+            
+            Mock Get-Choco-List -ModuleName AnalyzeTTBot -MockWith {
+                return @(
+                    [PSCustomObject]@{
+                        Name = "mediainfo-cli"
+                        Version = "25.03.0"
+                    }
+                )
             }
             
             # Вызываем тестируемый метод

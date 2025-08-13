@@ -10,89 +10,66 @@
     Дата: 2025
 #>
 
-# Импортируем PSFramework
-try {
-    # Проверяем наличие модуля
-    if (-not (Get-Module -Name PSFramework -ListAvailable)) {
-        Write-Warning "PSFramework не установлен. Попытка установки..."
-        Install-Module -Name PSFramework -AllowClobber -Scope CurrentUser
-    }
-    
-    # Импортируем модуль
-    Import-Module -Name PSFramework -ErrorAction Stop
-    Write-PSFMessage -Level Debug -Message "PSFramework успешно импортирован"
-    
-}
-catch {
-    Write-Error "Не удалось импортировать PSFramework: $_"
-    throw "Критическая ошибка при импорте PSFramework"
-}
+#region Module Initialization
+
 
 # Определяем путь к корневой директории модуля
-$script:ModuleRoot = $PSScriptRoot
-Write-PSFMessage -Level Debug -Message "Корневая директория модуля: $script:ModuleRoot" 
+Write-PSFMessage -Level Debug -Message "Корневая директория модуля: $PSScriptRoot" 
 
+# Загружаем компоненты модуля
+$componentPaths = @(
+    @{ Path = "Interfaces"; Name = "интерфейсов" },
+    @{ Path = "Utilities"; Name = "утилит" },
+    @{ Path = "Services"; Name = "сервисов" }
+)
 
-# Загружаем интерфейсы с помощью dot-sourcing
-Write-PSFMessage -Level Debug -Message  "Загрузка интерфейсов..." 
-
-# Используем прямой dot-sourcing как рекомендовано в памятке
-Get-ChildItem -Path "$script:ModuleRoot\Interfaces" -Filter "*.ps1" | Sort-Object Name | ForEach-Object {
-    try {
-        Write-PSFMessage -Level Debug -Message  "  Загрузка интерфейса: $($_.Name)" 
-        . $_.FullName
+foreach ($component in $componentPaths) {
+    $fullPath = Join-Path -Path $PSScriptRoot -ChildPath $component.Path
+    
+    if (Test-Path -Path $fullPath) {
+        Write-PSFMessage -Level Debug -Message "Загрузка $($component.Name)..." 
+        
+        Get-ChildItem -Path $fullPath -Filter "*.ps1" | Sort-Object Name | ForEach-Object {
+            try {
+                Write-PSFMessage -Level Debug -Message "  Загрузка $($component.Name.TrimEnd('в','х','й')): $($_.Name)" 
+                . $_.FullName
+            }
+            catch {
+                Write-PSFMessage -Level Critical -Message "Ошибка загрузки $($_.Name): $_"
+                throw $_
+            }
+        }
     }
-    catch {
-        Write-PSFMessage -Level Critical -Message "Ошибка загрузки интерфейса $($_.Name): $_"
-        throw $_
-    }
-}
-
-# Загружаем все утилиты
-Write-PSFMessage -Level Debug -Message "Загрузка утилит..." 
-Get-ChildItem -Path "$script:ModuleRoot\Utilities" -Filter "*.ps1" | Sort-Object Name | ForEach-Object {
-    try {
-        Write-PSFMessage -Level Debug -Message "  Загрузка утилиты: $($_.Name)" 
-        . $_.FullName
-    }
-    catch {
-        Write-PSFMessage -Level Critical -Message "Ошибка загрузки утилиты $($_.Name): $_"
-    }
-}
-
-# Загружаем контейнер зависимостей
-Write-PSFMessage -Level Debug -Message "Загрузка контейнера зависимостей..." 
-Get-ChildItem -Path "$script:ModuleRoot\Factories" -Filter "*.ps1" | Sort-Object Name | ForEach-Object {
-    try {
-        Write-PSFMessage -Level Debug -Message  "  Загрузка контейнера: $($_.Name)" 
-        . $_.FullName
-    }
-    catch {
-        Write-PSFMessage -Level Critical -Message "Ошибка загрузки контейнера $($_.Name): $_"
-        throw $_
+    else {
+        Write-PSFMessage -Level Warning -Message "Директория $($component.Path) не найдена"
     }
 }
 
-# Загружаем сервисы
-Write-PSFMessage -Level Debug -Message  "Загрузка сервисов..." 
-Get-ChildItem -Path "$script:ModuleRoot\Services" -Filter "*.ps1" | Sort-Object Name | ForEach-Object {
-    try {
-        Write-PSFMessage -Level Debug -Message "  Загрузка сервиса: $($_.Name)"
-        . $_.FullName
-    }
-    catch {
-        Write-PSFMessage -Level Critical -Message "Ошибка загрузки сервиса $($_.Name): $_"
-        throw $_
-    }
-}
-
-
-# Инициализация модуля
+# Минимальная инициализация модуля
 try {
-    # Централизованная инициализация конфигурации (встроенно из Initialize-Configuration.ps1)
+    Write-PSFMessage -Level Debug -Message "Модуль AnalyzeTTBot загружен. Готов к созданию экземпляров бота."
+}
+catch {
+    Write-PSFMessage -Level Critical -Message "Не удалось инициализировать модуль: $_"
+    exit 1
+}
+#endregion
+
+#region Private Functions
+function Initialize-BotConfiguration {
+    <#
+    .SYNOPSIS
+        Инициализирует конфигурацию бота.
+    .DESCRIPTION
+        Загружает конфигурационные файлы и настраивает провайдеры логирования.
+    .OUTPUTS
+        [PSCustomObject] Результат инициализации конфигурации.
+    #>
+    [CmdletBinding()]
+    param()
     
     # Определяем директорию конфигурации
-    $configDir = "$script:ModuleRoot\Config"
+    $configDir = Join-Path -Path $PSScriptRoot -ChildPath "Config"
     
     # Создаем массив конфигурационных файлов в порядке загрузки
     $configFiles = @(
@@ -102,12 +79,11 @@ try {
         "YtDlpConfig.ps1"
     )
     
-    # 1. Загружаем базовые конфигурационные файлы
+    # Загружаем базовые конфигурационные файлы
     $loadedConfigs = @()
     foreach ($configFile in $configFiles) {
         $configFilePath = Join-Path -Path $configDir -ChildPath $configFile
         
-        # Встроенная логика загрузки конфигурационного файла
         if (Test-Path -Path $configFilePath) {
             try {
                 Write-PSFMessage -Level Debug -Message "Загрузка конфигурации: $configFilePath"
@@ -125,7 +101,7 @@ try {
     
     Write-PSFMessage -Level Debug -Message "Загружено $($loadedConfigs.Count) из $($configFiles.Count) конфигурационных файлов"
     
-    # 2. Регистрация провайдера логирования
+    # Регистрация провайдера логирования
     $loggingEnabled = Get-PSFConfigValue -FullName "AnalyzeTTBot.Logging.Enabled" -Fallback $true
         
     if ($loggingEnabled) {
@@ -154,50 +130,118 @@ try {
         }
     }
     else {
-        Write-PSFMessage -Level Debug -Message  "Логирование отключено в конфигурации"
+        Write-PSFMessage -Level Debug -Message "Логирование отключено в конфигурации"
     }
     
-    # 3. Дополнительная информация для режима отладки
-    $debugMode = $DebugPreference -ne "SilentlyContinue" -or $PSBoundParameters.ContainsKey('Debug')
-    
-    if ($debugMode) {
-        Write-PSFMessage -Level Debug -Message "Активирован режим отладки в конфигурации"
-    }
-    
-    # Информация о результате инициализации конфигурации
-    $configInitResult = [PSCustomObject]@{
+    # Возвращаем результат инициализации
+    return [PSCustomObject]@{
         ConfigFilesLoaded = $loadedConfigs
-        DebugMode = $debugMode
+        LoggingEnabled = $loggingEnabled
+        DebugMode = $DebugPreference -ne "SilentlyContinue"
     }
-    
-    # Регистрируем сервисы в контейнере зависимостей
-    $registered = Register-DependencyServices -ClearContainer
-    
-    if (-not $registered) {
-        Write-PSFMessage -Level Critical -Message "Ошибка при регистрации сервисов."
-        throw "Ошибка инициализации модуля AnalyzeTTBot"
-    }
-    
-    Write-PSFMessage -Level Host -Message "Модуль AnalyzeTTBot успешно инициализирован."
-}
-catch {
-    Write-PSFMessage -Level Critical -Message "Не удалось инициализировать модуль: $_"
-    exit 1
 }
 
+function New-BotServices {
+    <#
+    .SYNOPSIS
+        Создает экземпляры всех сервисов бота.
+    .DESCRIPTION
+        Создает и настраивает все необходимые сервисы для работы бота.
+    .OUTPUTS
+        [BotService] Экземпляр основного сервиса бота.
+    #>
+    [CmdletBinding()]
+    param()
+    
+    Write-PSFMessage -Level Verbose -Message "Создание сервисов приложения"
+    
+    # Сначала создаем FileSystemService, так как другие сервисы зависят от него
+    $fileSystemService = [FileSystemService]::new(
+        (Get-PSFConfigValue -FullName "AnalyzeTTBot.Temp.Folder")
+    )
+    
+    # Создаем остальные сервисы
+    $telegramService = [TelegramService]::new(
+        (Get-PSFConfigValue -FullName "AnalyzeTTBot.Telegram.Token"),
+        (Get-PSFConfigValue -FullName "AnalyzeTTBot.MaxFileSize")
+    )
+    
+    $ytDlpService = [YtDlpService]::new(
+        (Get-PSFConfigValue -FullName "AnalyzeTTBot.YtDlp.Path"),
+        $fileSystemService,
+        (Get-PSFConfigValue -FullName "AnalyzeTTBot.YtDlp.Timeout"),
+        (Get-PSFConfigValue -FullName "AnalyzeTTBot.YtDlp.Format"),
+        (Get-PSFConfigValue -FullName "AnalyzeTTBot.YtDlp.CookiesPath")
+    )
+    
+    # Создаем специализированные сервисы для анализа медиа
+    $mediaInfoExtractorService = [MediaInfoExtractorService]::new($fileSystemService)
+    $mediaFormatterService = [MediaFormatterService]::new()
+    $hashtagGeneratorService = [HashtagGeneratorService]::new()
+    
+    # Создаем основной сервис бота
+    $botService = [BotService]::new(
+        $telegramService,
+        $ytDlpService,
+        $mediaInfoExtractorService,
+        $mediaFormatterService,
+        $hashtagGeneratorService,
+        $fileSystemService
+    )
+    
+    return $botService
+}
+#endregion
 
-# Функция для запуска бота
+#region Public Functions
+function Create-AnalyzeTTBot {
+    <#
+    .SYNOPSIS
+        Создает экземпляр бота AnalyzeTTBot.
+    .DESCRIPTION
+        Инициализирует конфигурацию, создает сервисы и возвращает экземпляр BotService.
+    .OUTPUTS
+        [BotService] Экземпляр основного сервиса бота.
+    .EXAMPLE
+        $botService = Create-AnalyzeTTBot
+        $botService.Start()
+    #>
+    [CmdletBinding()]
+    param()
+    
+    try {
+        # Инициализируем конфигурацию
+        $configResult = Initialize-BotConfiguration
+        
+        if ($configResult.DebugMode) {
+            Write-PSFMessage -Level Debug -Message "Активирован режим отладки в конфигурации"
+        }
+        
+        # Создаем сервисы
+        $botService = New-BotServices
+        
+        Write-PSFMessage -Level Host -Message "Модуль AnalyzeTTBot успешно инициализирован."
+        
+        return $botService
+    }
+    catch {
+        Write-PSFMessage -Level Critical -Message "Не удалось создать экземпляр бота: $_"
+        throw
+    }
+}
+
 function Start-AnalyzeTTBot {
     <#
     .SYNOPSIS
         Запускает TikTok бота для анализа видео.
     .DESCRIPTION
-        Функция запускает бота для анализа TikTok видео с использованием
-        обновленной системы конфигурации и инициализации.
+        Функция создает экземпляр бота и запускает его для анализа TikTok видео.
     .PARAMETER DebugMode
         Запускает бота в режиме отладки.
     .PARAMETER ValidateOnly
         Только проверяет зависимости без запуска бота.
+    .PARAMETER SkipCheckUpdates
+        Пропускает проверку обновлений.
     .EXAMPLE
         Start-AnalyzeTTBot -ValidateOnly
         Проверяет зависимости без запуска бота.
@@ -215,8 +259,8 @@ function Start-AnalyzeTTBot {
         [switch]$SkipCheckUpdates
     )
     
-    # Получаем экземпляр бота из контейнера
-    $botService = Get-DependencyService -ServiceType "IBotService"
+    # Создаем экземпляр бота
+    $botService = Create-AnalyzeTTBot
     
     # Всегда выполняем проверку зависимостей и выводим результат
     $result = $botService.TestDependencies($false, $SkipCheckUpdates) 
@@ -234,6 +278,7 @@ function Start-AnalyzeTTBot {
     }
     
     # Запускаем бота
-    Write-PSFMessage -Level Host  -Message "Запуск бота..." 
+    Write-PSFMessage -Level Host -Message "Запуск бота..." 
     $botService.Start($false)
 }
+#endregion
