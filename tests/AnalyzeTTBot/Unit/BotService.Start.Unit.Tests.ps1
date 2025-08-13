@@ -67,9 +67,6 @@ Describe "BotService.Start method" {
             $channelMessages = $mockTelegramService.SentMessages | Where-Object { $_.ChatId -eq 2 }
             $groupMessages = $mockTelegramService.SentMessages | Where-Object { $_.ChatId -eq 3 }
             
-            # Выводим все сообщения для отладки
-            Write-Host "All messages: $($mockTelegramService.SentMessages | ConvertTo-Json -Depth 2)"
-            
             # Проверяем, что все сообщения отправлены
             $privateMessages.Count | Should -BeGreaterOrEqual 1
             $channelMessages.Count | Should -BeGreaterOrEqual 1

@@ -49,10 +49,10 @@ class YtDlpService : IYtDlpService {
         
         # Подготавливаем директорию
         $outputDir = Split-Path -Parent $outputPath
-        $dirExists = $this.FileSystemService.EnsureFolderExists($outputDir)
+        $dirResult = $this.FileSystemService.EnsureFolderExists($outputDir)
         
-        if (-not $dirExists) {
-            $errorMessage = "Failed to create output directory: $outputDir"
+        if (-not $dirResult.Success) {
+            $errorMessage = "Failed to create output directory: $outputDir. Error: $($dirResult.Error)"
             Write-OperationFailed -Operation "Save TikTok video" -ErrorMessage $errorMessage -FunctionName "SaveTikTokVideo"
             return New-ErrorResponse -ErrorMessage $errorMessage
         }
