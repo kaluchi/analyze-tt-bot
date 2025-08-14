@@ -154,6 +154,11 @@ Describe "YtDlpService.TestYtDlpInstallation Extended Coverage Tests" {
             InModuleScope AnalyzeTTBot {
                 $mockFileSystemService = [IFileSystemService]::new()
                 $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
+
+                # Мокируем CheckUpdates, чтобы избежать реального сетевого вызова
+                $ytDlpService | Add-Member -MemberType ScriptMethod -Name "CheckUpdates" -Value {
+                    return New-SuccessResponse -Data @{ NeedsUpdate = $false }
+                } -Force
                 
                 # Тест с пустым выводом С ParameterFilter
                 Mock Invoke-ExternalProcess {
@@ -187,8 +192,10 @@ Describe "YtDlpService.TestYtDlpInstallation Extended Coverage Tests" {
                 } -ParameterFilter { $ExecutablePath -eq "yt-dlp" -and $ArgumentList -contains "--version" } -ModuleName AnalyzeTTBot
                 
                 $ytDlpService | Add-Member -MemberType ScriptMethod -Name "CheckUpdates" -Value {
+                    # Поскольку мы мокируем CheckUpdates, мы должны вернуть согласованные данные
+                    param($currentVersion)
                     return New-SuccessResponse -Data @{ 
-                        CurrentVersion = "2025.03.26`nAdditional info"
+                        CurrentVersion = $currentVersion
                         NewVersion = "2025.04.01"
                         NeedsUpdate = $true 
                     }

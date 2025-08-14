@@ -65,20 +65,28 @@ Describe 'YtDlpService.ExecuteYtDlp method' {
             if ($result.Error) { $result.Error | Should -Match 'Failed to execute yt-dlp' }
         }
     }
-    It 'Должен возвращать ошибку, если FindAndReadJsonMetadata возвращает null' {
+    It 'Должен корректно передавать cookies, если они указаны' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
-            # Унифицированные моки для файловой системы
-            $mockFileSystemService | Add-Member -MemberType ScriptMethod -Name EnsureFolderExists -Value { param($path) return @{ Success = $true } } -Force
-            Mock -CommandName Get-ChildItem -ModuleName AnalyzeTTBot -MockWith { @() }
-            Mock -CommandName Test-Path -ModuleName AnalyzeTTBot -MockWith { $true }
-            Mock -CommandName Remove-Item -ModuleName AnalyzeTTBot -MockWith { $null }
-            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
-            Mock -CommandName Read-JsonFile -ModuleName AnalyzeTTBot -MockWith { $null }
-            Mock -CommandName Write-JsonFile -ModuleName AnalyzeTTBot -MockWith { $null }
-            $result = $ytDlpService.SaveTikTokVideo('https://tiktok.com/video/err', 'output.mp4')
-            $result.Success | Should -BeFalse
-            ($result.ErrorMessage -or $result.Error) | Should -Not -BeNullOrEmpty
+            $cookiesPath = "C:\temp\cookies.txt"
+            # Мокаем Test-Path, чтобы он возвращал true для файла cookie
+            Mock Test-Path { return $true } -ModuleName AnalyzeTTBot -ParameterFilter { $Path -eq $cookiesPath }
+
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", $cookiesPath)
+            
+            $invokedArgs = $null
+            # Мокаем Invoke-ExternalProcess, чтобы перехватить аргументы
+            Mock Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
+                param($ExecutablePath, $ArgumentList)
+                $script:invokedArgs = $ArgumentList
+                return @{ Success = $true; ExitCode = 0; Output = @('success'); Error = '' }
+            }
+
+            $ytDlpService.ExecuteYtDlp('url', 'output')
+            
+            # Проверяем, что аргументы для cookies были добавлены
+            $script:invokedArgs | Should -Contain "--cookies"
+            $script:invokedArgs | Should -Contain $cookiesPath
         }
     }
     It 'Должен возвращать ошибку при ошибке обновления yt-dlp (UpdateYtDlp)' {

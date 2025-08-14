@@ -265,7 +265,7 @@ class YtDlpService : IYtDlpService {
         }
         
         # Даем yt-dlp время для завершения записи файла
-        Start-Sleep -Milliseconds 500
+        # Start-Sleep -Milliseconds 500
         
         # Ищем среди возможных путей первый существующий файл
         $jsonFilePath = ""

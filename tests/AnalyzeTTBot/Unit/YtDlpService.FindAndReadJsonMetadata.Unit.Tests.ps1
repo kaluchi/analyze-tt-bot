@@ -58,21 +58,55 @@ Describe 'YtDlpService.FindAndReadJsonMetadata method' {
             $result.JsonContent.webpage_url | Should -Be $testUrl
         }
     }
-    It 'Создаёт базовый JSON, если файл не найден и Read-JsonFile возвращает $null' {
+    It 'Создаёт базовый JSON, если файл не найден' {
         InModuleScope AnalyzeTTBot {
             $mockFileSystemService = [IFileSystemService]::new()
             $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
-            # Мокаем Test-Path для возврата $false
-            Mock -CommandName Test-Path -ModuleName AnalyzeTTBot -MockWith { return $false }
-            # Мокаем Read-JsonFile для возврата $null
-            Mock -CommandName Read-JsonFile -ModuleName AnalyzeTTBot -MockWith { return $null }
-            # Мокаем Write-JsonFile чтобы не писать на диск
-            Mock -CommandName Write-JsonFile -ModuleName AnalyzeTTBot -MockWith { }
+            
+            # Мокаем Test-Path, чтобы он всегда возвращал $false (файл не найден)
+            Mock Test-Path { return $false } -ModuleName AnalyzeTTBot
+
+            # Мокаем Write-JsonFile, чтобы не создавать реальный файл
+            Mock Write-JsonFile -ModuleName AnalyzeTTBot
+
             $testUrl = "https://www.tiktok.com/@testuser/video/1234567890"
             $testJsonPaths = @("C:\\temp\\video.mp4.info.json", "C:\\temp\\video.info.json")
+            
             $result = $ytDlpService.FindAndReadJsonMetadata($testJsonPaths, $testUrl)
+            
             $result.JsonContent | Should -Not -BeNullOrEmpty
-            $result.JsonFilePath | Should -Be "C:\\temp\\video.mp4.info.json"
+            $result.JsonFilePath | Should -Be $testJsonPaths[0]
+            $result.JsonContent.uploader | Should -Be "testuser"
+
+            # Проверяем, что Write-JsonFile был вызван
+            Should -Invoke -CommandName Write-JsonFile -ModuleName AnalyzeTTBot -Exactly 1
+        }
+    }
+
+    It 'Создаёт базовый JSON, если чтение существующего файла не удалось' {
+        InModuleScope AnalyzeTTBot {
+            $mockFileSystemService = [IFileSystemService]::new()
+            $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
+
+            # Мокаем Test-Path, чтобы он возвращал $true (файл найден)
+            Mock Test-Path { return $true } -ModuleName AnalyzeTTBot
+
+            # Мокаем Read-JsonFile, чтобы он возвращал $null (ошибка чтения)
+            Mock Read-JsonFile { return $null } -ModuleName AnalyzeTTBot
+
+            # Мокаем Write-JsonFile, чтобы не создавать реальный файл
+            Mock Write-JsonFile -ModuleName AnalyzeTTBot
+
+            $testUrl = "https://www.tiktok.com/@testuser/video/1234567890"
+            $testJsonPaths = @("C:\\temp\\video.mp4.info.json")
+
+            $result = $ytDlpService.FindAndReadJsonMetadata($testJsonPaths, $testUrl)
+
+            $result.JsonContent | Should -Not -BeNullOrEmpty
+            $result.JsonContent.uploader | Should -Be "testuser"
+
+            # Проверяем, что Write-JsonFile не был вызван, так как базовый JSON создается внутри и возвращается
+            Should -Not -Invoke -CommandName Write-JsonFile -ModuleName AnalyzeTTBot
         }
     }
 }
