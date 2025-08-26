@@ -266,5 +266,156 @@ Describe 'TelegramService.SendFile method' {
             $result.Data.reason | Should -Be "curl_error"
         }
     }
+
+    It 'Правильно экранирует caption с множественными хэштегами и пробелами при использовании curl' {
+        InModuleScope AnalyzeTTBot {
+            # Создаем сервис
+            $service = [TelegramService]::new('VALID_TOKEN', 50)
+            
+            # Мокаем Test-Path для возврата true (файл существует)
+            Mock -CommandName Test-Path -ModuleName AnalyzeTTBot -MockWith { return $true }
+            
+            # Мокаем Get-Item для возврата объекта с допустимым размером (5MB)
+            $mockFileInfo = New-Object -TypeName PSObject
+            $mockFileInfo | Add-Member -MemberType NoteProperty -Name Length -Value (5 * 1024 * 1024)
+            Mock -CommandName Get-Item -ModuleName AnalyzeTTBot -MockWith { return $mockFileInfo }
+            
+            # Мокаем Invoke-RestMethod для имитации неудачи (чтобы код перешел к curl)
+            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw "Невозможно отправить файл" }
+            
+            # Переменная для захвата аргументов curl (в глобальном скоупе)
+            $Global:capturedArgs = $null
+            
+            # Мокаем Invoke-ExternalProcess для захвата аргументов curl
+            Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
+                param($ExecutablePath, $ArgumentList)
+                $Global:capturedArgs = $ArgumentList
+                return @{
+                    Success = $true
+                    ExitCode = 0
+                    Output = '{"ok":true,"result":{"message_id":102}}'
+                    Error = ""
+                }
+            }
+            
+            # Тестируемый caption с множественными хэштегами и пробелами (как в реальной проблеме)
+            $testCaption = '#cataleyaaa973 #30fps #576x1024'
+            
+            # Вызываем тестируемый метод
+            $result = $service.SendFile(12345, 'test.txt', $testCaption, $null)
+            
+            # Проверяем что curl был вызван
+            Should -Invoke Invoke-ExternalProcess -ModuleName AnalyzeTTBot -Times 1
+            
+            # Проверяем что аргументы содержат правильно экранированный caption
+            $captionArg = $Global:capturedArgs | Where-Object { $_ -match '^caption=' }
+            $captionArg | Should -Be 'caption="#cataleyaaa973 #30fps #576x1024"'
+            
+            # Проверяем успешность операции
+            $result.Success | Should -BeTrue
+        }
+    }
+
+    It 'Правильно экранирует caption с кавычками при использовании curl' {
+        InModuleScope AnalyzeTTBot {
+            # Создаем сервис
+            $service = [TelegramService]::new('VALID_TOKEN', 50)
+            
+            # Мокаем Test-Path для возврата true (файл существует)
+            Mock -CommandName Test-Path -ModuleName AnalyzeTTBot -MockWith { return $true }
+            
+            # Мокаем Get-Item для возврата объекта с допустимым размером (5MB)
+            $mockFileInfo = New-Object -TypeName PSObject
+            $mockFileInfo | Add-Member -MemberType NoteProperty -Name Length -Value (5 * 1024 * 1024)
+            Mock -CommandName Get-Item -ModuleName AnalyzeTTBot -MockWith { return $mockFileInfo }
+            
+            # Мокаем Invoke-RestMethod для имитации неудачи (чтобы код перешел к curl)
+            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw "Невозможно отправить файл" }
+            
+            # Переменная для захвата аргументов curl (в глобальном скоупе)
+            $Global:capturedArgs = $null
+            
+            # Мокаем Invoke-ExternalProcess для захвата аргументов curl
+            Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
+                param($ExecutablePath, $ArgumentList)
+                $Global:capturedArgs = $ArgumentList
+                return @{
+                    Success = $true
+                    ExitCode = 0
+                    Output = '{"ok":true,"result":{"message_id":103}}'
+                    Error = ""
+                }
+            }
+            
+            # Тестируемый caption с кавычками
+            $testCaption = 'Video "Best moments" #highlight'
+            
+            # Вызываем тестируемый метод
+            $result = $service.SendFile(12345, 'test.txt', $testCaption, $null)
+            
+            # Проверяем что curl был вызван
+            Should -Invoke Invoke-ExternalProcess -ModuleName AnalyzeTTBot -Times 1
+            
+            # Проверяем что аргументы содержат правильно экранированный caption с кавычками
+            $captionArg = $Global:capturedArgs | Where-Object { $_ -match '^caption=' }
+            $captionArg | Should -Be 'caption="Video \"Best moments\" #highlight"'
+            
+            # Проверяем успешность операции
+            $result.Success | Should -BeTrue
+        }
+    }
+
+    It 'Правильно формирует все curl аргументы при отправке файла с caption и replyTo' {
+        InModuleScope AnalyzeTTBot {
+            # Создаем сервис
+            $service = [TelegramService]::new('VALID_TOKEN', 50)
+            
+            # Мокаем Test-Path для возврата true (файл существует)
+            Mock -CommandName Test-Path -ModuleName AnalyzeTTBot -MockWith { return $true }
+            
+            # Мокаем Get-Item для возврата объекта с допустимым размером (5MB)
+            $mockFileInfo = New-Object -TypeName PSObject
+            $mockFileInfo | Add-Member -MemberType NoteProperty -Name Length -Value (5 * 1024 * 1024)
+            Mock -CommandName Get-Item -ModuleName AnalyzeTTBot -MockWith { return $mockFileInfo }
+            
+            # Мокаем Invoke-RestMethod для имитации неудачи (чтобы код перешел к curl)
+            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw "Невозможно отправить файл" }
+            
+            # Переменная для захвата аргументов curl (в глобальном скоупе)
+            $Global:capturedArgs = $null
+            
+            # Мокаем Invoke-ExternalProcess для захвата аргументов curl
+            Mock -CommandName Invoke-ExternalProcess -ModuleName AnalyzeTTBot -MockWith {
+                param($ExecutablePath, $ArgumentList)
+                $Global:capturedArgs = $ArgumentList
+                return @{
+                    Success = $true
+                    ExitCode = 0
+                    Output = '{"ok":true,"result":{"message_id":104}}'
+                    Error = ""
+                }
+            }
+            
+            # Вызываем тестируемый метод с полным набором параметров
+            $result = $service.SendFile(867152, 'test.txt', '#test #video', 11383)
+            
+            # Проверяем что curl был вызван с правильными аргументами
+            Should -Invoke Invoke-ExternalProcess -ModuleName AnalyzeTTBot -Times 1
+            
+            # Проверяем обязательные аргументы curl
+            $Global:capturedArgs | Should -Contain '-s'
+            $Global:capturedArgs | Should -Contain '-X'
+            $Global:capturedArgs | Should -Contain 'POST'
+            $Global:capturedArgs | Should -Contain '-F'
+            $Global:capturedArgs | Should -Contain 'chat_id=867152'
+            $Global:capturedArgs | Should -Contain 'caption="#test #video"'
+            $Global:capturedArgs | Should -Contain 'reply_to_message_id=11383'
+            $documentArg = $Global:capturedArgs | Where-Object { $_ -match 'document=@' }
+            $documentArg | Should -Match 'document=@".*test\.txt"'
+            
+            # Проверяем успешность операции
+            $result.Success | Should -BeTrue
+        }
+    }
 }
 #endregion

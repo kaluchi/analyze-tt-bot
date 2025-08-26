@@ -173,7 +173,9 @@ class TelegramService : ITelegramService {
             
             # Добавляем опциональные параметры
             if (-not [string]::IsNullOrEmpty($caption)) {
-                $curlArgs += @('-F', "caption=$caption")
+                # Экранируем кавычки в caption для безопасной передачи через curl
+                $escapedCaption = $caption -replace '"', '\"'
+                $curlArgs += @('-F', "caption=`"$escapedCaption`"")
             }
             
             if ($replyToMessageId) {
@@ -274,7 +276,7 @@ class TelegramService : ITelegramService {
         try {
             $telegramToken = $this.Token
             
-            if ([string]::IsNullOrWhiteSpace($telegramToken) -or $telegramToken -eq "YOUR_BOT_TOKEN_HERE") {
+            if ([string]::IsNullOrWhiteSpace($telegramToken) -or $telegramToken -eq "PLACE_YOUR_REAL_TOKEN_HERE" -or $telegramToken -eq "YOUR_BOT_TOKEN_HERE") {
                 $testResult = @{
                     Name = "Telegram Bot"
                     Valid = $false
@@ -296,9 +298,10 @@ class TelegramService : ITelegramService {
                 # Проверяем работоспособность токена
                 Write-PSFMessage -Level Verbose -Message "Проверка токена Telegram (скрыт для безопасности)"
                 $apiUrl = "https://api.telegram.org/bot$telegramToken/getMe"
+                Write-PSFMessage -Level Verbose -Message "API URL: $apiUrl"
                 
                 try {
-                    $response = Invoke-RestMethod -Uri $apiUrl -Method Get -ErrorAction Stop
+                    $response = Invoke-RestMethod -Uri $apiUrl -Method Get -ErrorAction Stop -ConnectionTimeoutSeconds 10 -MaximumRedirection 0 -MaximumRetryCount 5
                     
                     if ($response.ok) {
                         $testResult = @{

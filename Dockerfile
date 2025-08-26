@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     wget \
+    curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install yt-dlp==2025.8.11 \

@@ -27,6 +27,8 @@ Describe 'TelegramService.TestToken' {
 
     It 'Возвращает ошибку, если токен пустой' {
         InModuleScope AnalyzeTTBot {
+            # Мок для предотвращения реальных HTTP запросов
+            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Mocked error' }
             $service = [TelegramService]::new('', 50)
             $result = $service.TestToken($false)
             $result.Success | Should -BeFalse
@@ -36,6 +38,8 @@ Describe 'TelegramService.TestToken' {
     }
     It 'Возвращает ошибку, если токен YOUR_BOT_TOKEN_HERE' {
         InModuleScope AnalyzeTTBot {
+            # Мок для предотвращения реальных HTTP запросов
+            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Mocked error' }
             $service = [TelegramService]::new('YOUR_BOT_TOKEN_HERE', 50)
             $result = $service.TestToken($false)
             $result.Success | Should -BeFalse
@@ -52,16 +56,15 @@ Describe 'TelegramService.TestToken' {
             $result.Data.Description | Should -Match 'Валидация токена пропущена'
         }
     }
-    It 'Проверяет токен PLACE_YOUR_REAL_TOKEN_HERE как обычный токен' {
+    It 'Возвращает ошибку, если токен PLACE_YOUR_REAL_TOKEN_HERE' {
         InModuleScope AnalyzeTTBot {
+            # Мок для предотвращения реальных HTTP запросов
+            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Mocked error' }
             $service = [TelegramService]::new('PLACE_YOUR_REAL_TOKEN_HERE', 50)
-            # Мокаем Invoke-RestMethod, так как теперь этот токен проверяется как обычный токен
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw '401 Unauthorized' }
             $result = $service.TestToken($false)
-            # Теперь ожидаем, что будет ошибка
             $result.Success | Should -BeFalse
+            $result.Error | Should -Match 'Токен Telegram не настроен'
             $result.Data.Valid | Should -BeFalse
-            $result.Data.Description | Should -Match 'Не удалось подключиться к API Telegram'
         }
     }
     It 'Возвращает ошибку при невалидном токене (мокаем Invoke-RestMethod)' {
