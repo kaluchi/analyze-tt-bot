@@ -48,9 +48,9 @@ Describe 'YtDlpService.FindOutputFile method' {
         It 'Returns empty string when no matching files are found' {
             InModuleScope AnalyzeTTBot {
                 # Arrange
-                Mock Test-Path { return $true } -ModuleName AnalyzeTTBot
-                Mock Get-ChildItem { return @() } -ModuleName AnalyzeTTBot
-                Mock Write-PSFMessage { } -ModuleName AnalyzeTTBot
+                Mock Test-Path { return $true }
+                Mock Get-ChildItem { return @() }
+                Mock Write-PSFMessage { }
 
                 $mockFileSystemService = [IFileSystemService]::new()
                 $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
@@ -60,7 +60,7 @@ Describe 'YtDlpService.FindOutputFile method' {
 
                 # Assert
                 $result | Should -BeExactly ""
-                Should -Invoke Write-PSFMessage -Times 1 -Exactly -ModuleName AnalyzeTTBot -ParameterFilter {
+                Should -Invoke Write-PSFMessage -Times 1 -Exactly -ParameterFilter {
                     $Message -like "*No matching files found in directory*" -and $Level -eq 'Warning'
                 }
             }
@@ -69,7 +69,7 @@ Describe 'YtDlpService.FindOutputFile method' {
         It 'Returns the most recently created matching file' {
             InModuleScope AnalyzeTTBot {
                 # Arrange
-                Mock Test-Path { return $true } -ModuleName AnalyzeTTBot
+                Mock Test-Path { return $true }
 
                 $mockFiles = @(
                     [PSCustomObject]@{
@@ -84,8 +84,8 @@ Describe 'YtDlpService.FindOutputFile method' {
                     }
                 )
 
-                Mock Get-ChildItem { return $mockFiles } -ModuleName AnalyzeTTBot
-                Mock Write-PSFMessage { } -ModuleName AnalyzeTTBot
+                Mock Get-ChildItem { return $mockFiles }
+                Mock Write-PSFMessage { }
 
                 $mockFileSystemService = [IFileSystemService]::new()
                 $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
@@ -95,7 +95,7 @@ Describe 'YtDlpService.FindOutputFile method' {
 
                 # Assert - нормализуем путь для кросс-платформенности
                 $result | Should -Match "video\[02\]\.mp4"
-                Should -Invoke Write-PSFMessage -Times 1 -Exactly -ModuleName AnalyzeTTBot -ParameterFilter {
+                Should -Invoke Write-PSFMessage -Times 1 -Exactly -ParameterFilter {
                     $Message -like "*Found recently created file*" -and $Level -eq 'Debug'
                 }
             }
@@ -104,7 +104,7 @@ Describe 'YtDlpService.FindOutputFile method' {
         It 'Only returns files with valid media extensions' {
             InModuleScope AnalyzeTTBot {
                 # Arrange
-                Mock Test-Path { return $true } -ModuleName AnalyzeTTBot
+                Mock Test-Path { return $true }
 
                 $mockFiles = @(
                     [PSCustomObject]@{
@@ -119,8 +119,8 @@ Describe 'YtDlpService.FindOutputFile method' {
                     }
                 )
 
-                Mock Get-ChildItem { return $mockFiles } -ModuleName AnalyzeTTBot
-                Mock Write-PSFMessage { } -ModuleName AnalyzeTTBot
+                Mock Get-ChildItem { return $mockFiles }
+                Mock Write-PSFMessage { }
 
                 $mockFileSystemService = [IFileSystemService]::new()
                 $ytDlpService = [YtDlpService]::new("yt-dlp", $mockFileSystemService, 30, "best", "")
@@ -130,7 +130,7 @@ Describe 'YtDlpService.FindOutputFile method' {
 
                 # Assert - нормализуем путь для кросс-платформенности
                 $result | Should -Match "video\.mp4"
-                Should -Invoke Write-PSFMessage -Times 1 -Exactly -ModuleName AnalyzeTTBot -ParameterFilter {
+                Should -Invoke Write-PSFMessage -Times 1 -Exactly -ParameterFilter {
                     $Message -like "*Found recently created file*" -and $Level -eq 'Debug'
                 }
             }
