@@ -28,7 +28,7 @@ Describe 'TelegramService.TestToken' {
     It 'Возвращает ошибку, если токен пустой' {
         InModuleScope AnalyzeTTBot {
             # Мок для предотвращения реальных HTTP запросов
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Mocked error' }
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Mocked error' }
             $service = [TelegramService]::new('', 50)
             $result = $service.TestToken($false)
             $result.Success | Should -BeFalse
@@ -39,7 +39,7 @@ Describe 'TelegramService.TestToken' {
     It 'Возвращает ошибку, если токен YOUR_BOT_TOKEN_HERE' {
         InModuleScope AnalyzeTTBot {
             # Мок для предотвращения реальных HTTP запросов
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Mocked error' }
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Mocked error' }
             $service = [TelegramService]::new('YOUR_BOT_TOKEN_HERE', 50)
             $result = $service.TestToken($false)
             $result.Success | Should -BeFalse
@@ -59,7 +59,7 @@ Describe 'TelegramService.TestToken' {
     It 'Возвращает ошибку, если токен PLACE_YOUR_REAL_TOKEN_HERE' {
         InModuleScope AnalyzeTTBot {
             # Мок для предотвращения реальных HTTP запросов
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Mocked error' }
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Mocked error' }
             $service = [TelegramService]::new('PLACE_YOUR_REAL_TOKEN_HERE', 50)
             $result = $service.TestToken($false)
             $result.Success | Should -BeFalse
@@ -67,21 +67,21 @@ Describe 'TelegramService.TestToken' {
             $result.Data.Valid | Should -BeFalse
         }
     }
-    It 'Возвращает ошибку при невалидном токене (мокаем Invoke-RestMethod)' {
+    It 'Возвращает ошибку при невалидном токене (мокаем Invoke-CurlMethod)' {
         InModuleScope AnalyzeTTBot {
             $service = [TelegramService]::new('INVALID_TOKEN', 50)
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw '401 Unauthorized' }
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith { throw '401 Unauthorized' }
             $result = $service.TestToken($false)
             $result.Success | Should -BeFalse
             $result.Data.Valid | Should -BeFalse
             $result.Data.Description | Should -Match 'Не удалось подключиться к API Telegram'
         }
     }
-    It 'Возвращает успех при валидном токене (мокаем Invoke-RestMethod)' {
+    It 'Возвращает успех при валидном токене (мокаем Invoke-CurlMethod)' {
         InModuleScope AnalyzeTTBot {
             $service = [TelegramService]::new('VALID_TOKEN', 50)
             $mockResponse = @{ ok = $true; result = @{ username = 'test_bot' } }
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { $mockResponse }
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith { $mockResponse }
             $result = $service.TestToken($false)
             $result.Success | Should -BeTrue
             $result.Data.Valid | Should -BeTrue

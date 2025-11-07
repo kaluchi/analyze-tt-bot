@@ -132,7 +132,7 @@ class TelegramService : ITelegramService {
             return New-SuccessResponse -Data $response
         } catch {
             # Если ошибка связана с тем, что сообщение не изменилось, это не считается ошибкой
-            if ($_.Exception.Response.StatusCode -eq 400 -and $_.ErrorDetails.Message -match "message is not modified") {
+            if ($_.Exception.Message -match "message is not modified") {
                 Write-PSFMessage -Level Verbose -FunctionName "EditMessage" -Message "Message not modified"
                 $notModifiedResponse = @{
                     ok = $true
