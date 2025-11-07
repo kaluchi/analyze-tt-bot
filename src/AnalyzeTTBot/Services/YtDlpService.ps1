@@ -132,6 +132,7 @@ class YtDlpService : IYtDlpService {
                 "--no-playlist",
                 "--write-info-json",
                 "--no-warnings",
+                "--no-check-certificate",  # Отключаем проверку SSL сертификата для работы с proxy
                 $url
             )
             

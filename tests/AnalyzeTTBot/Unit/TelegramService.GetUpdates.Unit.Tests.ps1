@@ -34,9 +34,9 @@ Describe 'TelegramService.GetUpdates method' {
             # Создаем сервис
             $service = [TelegramService]::new('VALID_TOKEN', 50)
             
-            # Мокаем Invoke-RestMethod для имитации ответа без обновлений
+            # Мокаем Invoke-CurlMethod для имитации ответа без обновлений
             $mockResponse = @{ ok = $true; result = @() }
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { $mockResponse }
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith { $mockResponse }
             
             # Вызываем тестируемый метод
             $result = $service.GetUpdates(0, 30)
@@ -55,7 +55,7 @@ Describe 'TelegramService.GetUpdates method' {
             # Создаем сервис
             $service = [TelegramService]::new('VALID_TOKEN', 50)
             
-            # Мокаем Invoke-RestMethod для имитации ответа с обновлениями
+            # Мокаем Invoke-CurlMethod для имитации ответа с обновлениями
             $mockUpdates = @(
                 @{
                     update_id = 123456789
@@ -80,7 +80,7 @@ Describe 'TelegramService.GetUpdates method' {
             )
             
             $mockResponse = @{ ok = $true; result = $mockUpdates }
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { $mockResponse }
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith { $mockResponse }
             
             # Вызываем тестируемый метод
             $result = $service.GetUpdates(0, 30)
@@ -103,18 +103,18 @@ Describe 'TelegramService.GetUpdates method' {
             $service = [TelegramService]::new('VALID_TOKEN', 50)
             
             # Создаем мок с проверкой параметров
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { 
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith {
                 # Проверяем, что URL содержит правильные параметры
                 $uri | Should -Match "offset=12345"
                 $uri | Should -Match "timeout=60"
                 return @{ ok = $true; result = @() }
             }
-            
+
             # Вызываем тестируемый метод с конкретными значениями
             $result = $service.GetUpdates(12345, 60)
-            
+
             # Проверяем, что мок был вызван
-            Should -Invoke Invoke-RestMethod -Times 1 -Exactly -ModuleName AnalyzeTTBot
+            Should -Invoke Invoke-CurlMethod -Times 1 -Exactly -ModuleName AnalyzeTTBot
             
             # Проверяем базовый результат
             $result.Success | Should -BeTrue
@@ -126,9 +126,9 @@ Describe 'TelegramService.GetUpdates method' {
             # Создаем сервис
             $service = [TelegramService]::new('VALID_TOKEN', 50)
             
-            # Мокаем Invoke-RestMethod для имитации ошибочного ответа от API
+            # Мокаем Invoke-CurlMethod для имитации ошибочного ответа от API
             $mockResponse = @{ ok = $false; description = 'Unauthorized' }
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { $mockResponse }
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith { $mockResponse }
             
             # Вызываем тестируемый метод
             $result = $service.GetUpdates(0, 30)
@@ -144,8 +144,8 @@ Describe 'TelegramService.GetUpdates method' {
             # Создаем сервис
             $service = [TelegramService]::new('INVALID_TOKEN', 50)
             
-            # Мокаем Invoke-RestMethod для имитации исключения
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Network error' }
+            # Мокаем Invoke-CurlMethod для имитации исключения
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith { throw 'Network error' }
             
             # Вызываем тестируемый метод
             $result = $service.GetUpdates(0, 30)
@@ -161,9 +161,9 @@ Describe 'TelegramService.GetUpdates method' {
             # Создаем сервис
             $service = [TelegramService]::new('VALID_TOKEN', 50)
             
-            # Мокаем Invoke-RestMethod для имитации ответа с null result
+            # Мокаем Invoke-CurlMethod для имитации ответа с null result
             $mockResponse = @{ ok = $true; result = $null }
-            Mock -CommandName Invoke-RestMethod -ModuleName AnalyzeTTBot -MockWith { $mockResponse }
+            Mock -CommandName Invoke-CurlMethod -ModuleName AnalyzeTTBot -MockWith { $mockResponse }
             
             # Вызываем тестируемый метод
             $result = $service.GetUpdates(0, 30)

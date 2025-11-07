@@ -53,8 +53,8 @@ Describe "TelegramService.SendMessage Tests" {
     Context "Basic message sending" {
         It "Should format and send message correctly" {
             InModuleScope AnalyzeTTBot {
-                # Мокируем Invoke-RestMethod, чтобы вернуть успешный ответ
-                Mock Invoke-RestMethod {
+                # Мокируем Invoke-CurlMethod, чтобы вернуть успешный ответ
+                Mock Invoke-CurlMethod {
                     return @{
                         ok = $true
                         result = @{
@@ -74,8 +74,8 @@ Describe "TelegramService.SendMessage Tests" {
                 $telegramService = [TelegramService]::new($script:testToken, $script:testMaxFileSizeMB)
                 $result = $telegramService.SendMessage($script:testChatId, $script:testText, $null, $null)
                 
-                # Проверяем, что Invoke-RestMethod был вызван с правильными параметрами
-                Should -Invoke Invoke-RestMethod -Times 1 -Exactly -ModuleName AnalyzeTTBot -ParameterFilter {
+                # Проверяем, что Invoke-CurlMethod был вызван с правильными параметрами
+                Should -Invoke Invoke-CurlMethod -Times 1 -Exactly -ModuleName AnalyzeTTBot -ParameterFilter {
                     $Uri -like "*sendMessage" -and
                     $Method -eq "Post" -and
                     $Body -match $script:testText
@@ -92,8 +92,8 @@ Describe "TelegramService.SendMessage Tests" {
             
         It "Should handle optional parameters correctly" {
             InModuleScope AnalyzeTTBot {
-                # Мокируем Invoke-RestMethod
-                Mock Invoke-RestMethod {
+                # Мокируем Invoke-CurlMethod
+                Mock Invoke-CurlMethod {
                     return @{
                         ok = $true
                         result = @{
@@ -113,8 +113,8 @@ Describe "TelegramService.SendMessage Tests" {
                 $telegramService = [TelegramService]::new($script:testToken, $script:testMaxFileSizeMB)
                 $result = $telegramService.SendMessage($script:testChatId, $script:testText, $script:testMessageId, "HTML")
                 
-                # Проверяем, что Invoke-RestMethod был вызван с правильными параметрами
-                Should -Invoke Invoke-RestMethod -Times 1 -Exactly -ModuleName AnalyzeTTBot -ParameterFilter {
+                # Проверяем, что Invoke-CurlMethod был вызван с правильными параметрами
+                Should -Invoke Invoke-CurlMethod -Times 1 -Exactly -ModuleName AnalyzeTTBot -ParameterFilter {
                     $Uri -like "*sendMessage" -and
                     $Method -eq "Post" -and
                     $Body -match $script:testText -and
@@ -133,8 +133,8 @@ Describe "TelegramService.SendMessage Tests" {
             
         It "Should return error response on API error" {
             InModuleScope AnalyzeTTBot {
-                # Мокируем Invoke-RestMethod, чтобы он выбрасывал исключение
-                Mock Invoke-RestMethod { throw "API Error" } -ModuleName AnalyzeTTBot
+                # Мокируем Invoke-CurlMethod, чтобы он выбрасывал исключение
+                Mock Invoke-CurlMethod { throw "API Error" } -ModuleName AnalyzeTTBot
                 
                 # Мокируем Get-PSFConfigValue
                 Mock Get-PSFConfigValue { return "⚠️ Файл слишком большой для отправки через Telegram ({0} МБ)." } -ModuleName AnalyzeTTBot

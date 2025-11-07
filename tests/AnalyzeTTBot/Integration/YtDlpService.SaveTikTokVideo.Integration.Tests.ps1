@@ -37,7 +37,16 @@ Describe "YtDlpService.SaveTikTokVideo Integration Tests" {
         if (-not $ytDlpPath) {
             throw "yt-dlp не найден в системе"
         }
-        
+
+        # Проверяем наличие реальных TikTok cookies
+        $cookiesPath = Join-Path $projectRoot "cookies\cookies.txt"
+        $script:HasRealCookies = $false
+        if (Test-Path $cookiesPath) {
+            $cookiesContent = Get-Content $cookiesPath -Raw
+            # Проверяем, есть ли в файле реальные cookie данные (не только комментарии)
+            $script:HasRealCookies = $cookiesContent -match '^\s*\.tiktok\.com\s+' -or $cookiesContent -match '^\s*tiktok\.com\s+'
+        }
+
         $config = @{
             YtDlpPath = $ytDlpPath
             DownloadTimeout = 60
@@ -46,19 +55,23 @@ Describe "YtDlpService.SaveTikTokVideo Integration Tests" {
             expectedAuthorUsername = "yakinattyy_"
             expectedVideoTitle = "тгк:яника"
             expectedFullVideoUrl = "https://www.tiktok.com/@yakinattyy_/video/7492429481462746384?_t=ZM-8vjNmHDakoX&_r=1"
+            CookiesPath = if ($script:HasRealCookies) { $cookiesPath } else { "" }
         }
-        
+
         # Создаем временную директорию для тестов
         $script:TestTempPath = Join-Path $env:TEMP "YtDlpServiceIntegrationTests_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
         New-Item -Path $script:TestTempPath -ItemType Directory -Force | Out-Null
-        
+
         # Конфигурация будет доступна для InModuleScope
         $script:Config = $config
     }
     
     Context "Successful video download scenarios" {
-        It "Should download video successfully with all metadata" {
-            InModuleScope AnalyzeTTBot -Parameters @{ 
+        It "Should download video successfully with all metadata" -Skip:(-not $script:HasRealCookies) {
+            if (-not $script:HasRealCookies) {
+                Set-ItResult -Skipped -Because "Real TikTok cookies are not configured. Please export cookies from browser to cookies/cookies.txt"
+            }
+            InModuleScope AnalyzeTTBot -Parameters @{
                 TestTempPath = $script:TestTempPath
                 Config = $script:Config
             } {
@@ -69,7 +82,7 @@ Describe "YtDlpService.SaveTikTokVideo Integration Tests" {
                     $fileSystemService,
                     $Config.DownloadTimeout,
                     $Config.DefaultFormat,
-                    ""
+                    $Config.CookiesPath
                 )
                 
                 $result = $ytDlpService.SaveTikTokVideo($config.ValidTikTokUrl, "")
@@ -102,8 +115,11 @@ Describe "YtDlpService.SaveTikTokVideo Integration Tests" {
             }
         }
         
-        It "Should save video to specified output path" {
-            InModuleScope AnalyzeTTBot -Parameters @{ 
+        It "Should save video to specified output path" -Skip:(-not $script:HasRealCookies) {
+            if (-not $script:HasRealCookies) {
+                Set-ItResult -Skipped -Because "Real TikTok cookies are not configured. Please export cookies from browser to cookies/cookies.txt"
+            }
+            InModuleScope AnalyzeTTBot -Parameters @{
                 TestTempPath = $script:TestTempPath
                 Config = $script:Config
             } {
@@ -113,7 +129,7 @@ Describe "YtDlpService.SaveTikTokVideo Integration Tests" {
                     $fileSystemService,
                     $Config.DownloadTimeout,
                     $Config.DefaultFormat,
-                    ""
+                    $Config.CookiesPath
                 )
                 
                 $customOutputPath = Join-Path $TestTempPath "custom_video.mp4"

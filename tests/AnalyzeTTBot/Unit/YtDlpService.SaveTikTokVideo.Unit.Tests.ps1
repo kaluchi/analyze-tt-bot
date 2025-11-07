@@ -51,7 +51,7 @@ Describe "YtDlpService.SaveTikTokVideo Tests" {
                 } -Force
                 
                 # Мокаем Test-Path для прохождения проверки существования файла
-                Mock Test-Path { return $true } -ModuleName AnalyzeTTBot
+                Mock Test-Path { return $true }
                 $result = $ytDlpService.SaveTikTokVideo("https://tiktok.com/@user/video/123456", "C:\temp\output.mp4")
                 $result.Success | Should -BeTrue
                 $result.data.FilePath | Should -Be "C:\temp\output.mp4"
@@ -85,7 +85,7 @@ Describe "YtDlpService.SaveTikTokVideo Tests" {
                 } -Force
                 
                 # Мокаем Test-Path для прохождения проверки существования файла
-                Mock Test-Path { return $true } -ModuleName AnalyzeTTBot
+                Mock Test-Path { return $true }
                 $result = $ytDlpService.SaveTikTokVideo("https://tiktok.com/@user/video/123456", "")
                 $result.Success | Should -BeTrue
                 $result.data.FilePath | Should -Be "C:\Temp\TestFolder\test.mp4"
@@ -170,7 +170,7 @@ Describe "YtDlpService.SaveTikTokVideo Tests" {
                 } -Force
                 
                 # Настраиваем другие моки, если необходимы
-                Mock Test-Path { return $true } -ModuleName AnalyzeTTBot
+                Mock Test-Path { return $true }
                 
                 # Мокируем и ExecuteYtDlp, чтобы тест концентрировался на обработке ошибки создания директории
                 Mock Invoke-ExternalProcess {

@@ -53,8 +53,8 @@ Describe "TelegramService.EditMessage Tests" {
     Context "Edit message functionality" {
         It "Should format and edit message correctly" {
             InModuleScope AnalyzeTTBot {
-                # Мокируем Invoke-RestMethod
-                Mock Invoke-RestMethod {
+                # Мокируем Invoke-CurlMethod
+                Mock Invoke-CurlMethod {
                     return @{
                         ok = $true
                         result = @{
@@ -74,8 +74,8 @@ Describe "TelegramService.EditMessage Tests" {
                 $telegramService = [TelegramService]::new($script:testToken, $script:testMaxFileSizeMB)
                 $result = $telegramService.EditMessage($script:testChatId, $script:testMessageId, $script:testText, $null)
                 
-                # Проверяем, что Invoke-RestMethod был вызван с правильными параметрами
-                Should -Invoke Invoke-RestMethod -Times 1 -Exactly -ModuleName AnalyzeTTBot -ParameterFilter {
+                # Проверяем, что Invoke-CurlMethod был вызван с правильными параметрами
+                Should -Invoke Invoke-CurlMethod -Times 1 -Exactly -ModuleName AnalyzeTTBot -ParameterFilter {
                     $Uri -like "*editMessageText" -and
                     $Method -eq "Post" -and
                     $Body -match $script:testText -and
@@ -96,34 +96,11 @@ Describe "TelegramService.EditMessage Tests" {
             
         It "Should handle message not modified error gracefully" {
             InModuleScope AnalyzeTTBot {
-                # Мокируем Invoke-RestMethod для имитации ошибки "message is not modified"
-                Mock Invoke-RestMethod {
-                    # В Telegram API данная ошибка возвращается с кодом 400 Bad Request
-                    $statusCode = 400
-                    $exception = [System.Net.WebException]::new(
-                        "The remote server returned an error: (400) Bad Request.",
-                        $null,
-                        [System.Net.WebExceptionStatus]::ProtocolError,
-                        $null
-                    )
-                    
-                    # Создаем ошибку с дополнительными деталями
-                    $errorMsg = '{"ok":false,"error_code":400,"description":"Bad Request: message is not modified"}'
-                    $errorRecord = [System.Management.Automation.ErrorRecord]::new(
-                        $exception,
-                        "WebException",
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $null
-                    )
-                    $errorRecord.ErrorDetails = New-Object System.Management.Automation.ErrorDetails $errorMsg
-                    
-                    # Добавляем свойство Response.StatusCode для корректной работы обработчика в классе TelegramService
-                    $response = @{ StatusCode = $statusCode }
-                    
-                    # Обходим ограничения PowerShell и добавляем свойство к исключению
-                    $exception | Add-Member -NotePropertyName Response -NotePropertyValue $response -Force
-                    
-                    throw $errorRecord
+                # Мокируем Invoke-CurlMethod для имитации ошибки "message is not modified"
+                Mock Invoke-CurlMethod {
+                    # curl возвращает JSON с ошибкой и парсит его
+                    # Имитируем ответ Telegram API с ошибкой "message is not modified"
+                    throw "Invoke-CurlMethod failed: curl failed with exit code 1: {`"ok`":false,`"error_code`":400,`"description`":`"Bad Request: message is not modified`"}"
                 } -ModuleName AnalyzeTTBot
                 
                 # Мокируем Get-PSFConfigValue

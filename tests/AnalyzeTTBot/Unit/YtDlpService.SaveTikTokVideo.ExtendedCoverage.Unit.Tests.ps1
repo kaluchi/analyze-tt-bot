@@ -341,9 +341,10 @@ Describe "YtDlpService.SaveTikTokVideo Extended Coverage Tests" {
                 # Тестируем с вложенной структурой директорий
                 $complexPath = "C:\Users\TestUser\Downloads\TikTok\2025\August\video.mp4"
                 $result = $ytDlpService.SaveTikTokVideo("https://tiktok.com/@user/video/123456", $complexPath)
-                
+
                 $result.Success | Should -BeTrue
-                $global:directoryCreated | Should -Be "C:\Users\TestUser\Downloads\TikTok\2025\August"
+                # Проверяем путь кросс-платформенно (игнорируем разделители)
+                $global:directoryCreated | Should -Match "Users.*TestUser.*Downloads.*TikTok.*2025.*August"
             }
         }
     }
