@@ -31,11 +31,11 @@ Describe 'YtDlpService.GetPossibleJsonPaths method' {
             if ($result -isnot [System.Collections.IEnumerable] -or $result -is [string]) {
                 $result = @($result)
             }
-            # Нормализуем пути для сравнения: убираем все слэши и сравниваем только имена файлов
-            $normalized = $result | ForEach-Object { [System.IO.Path]::GetFileName($_) }
-            $normalized.Count | Should -Be 2
-            $normalized | Should -Contain "video.mp4.info.json"
-            $normalized | Should -Contain "video.info.json"
+            # Проверяем количество результатов
+            $result.Count | Should -Be 2
+            # Проверяем, что пути содержат нужные имена файлов (кросс-платформенно)
+            $result[0] | Should -Match "video\.mp4\.info\.json$"
+            $result[1] | Should -Match "video\.info\.json$"
         }
     }
 }
