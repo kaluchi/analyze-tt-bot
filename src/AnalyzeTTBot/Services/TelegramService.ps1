@@ -8,6 +8,64 @@
     Версия: 1.1.0
     Обновлено: 01.04.2025 - Использование утилитарных функций для логирования и работы с процессами
 #>
+
+# Вспомогательная функция для вызова API через curl (работает с proxy)
+function Invoke-CurlMethod {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$Uri,
+
+        [Parameter(Mandatory=$false)]
+        [string]$Method = "GET",
+
+        [Parameter(Mandatory=$false)]
+        [string]$Body,
+
+        [Parameter(Mandatory=$false)]
+        [string]$ContentType = "application/json",
+
+        [Parameter(Mandatory=$false)]
+        [hashtable]$Form
+    )
+
+    $curlArgs = @('-s')  # Silent mode
+
+    if ($Method -eq "POST") {
+        $curlArgs += '-X', 'POST'
+        if ($Body) {
+            $curlArgs += '-H', "Content-Type: $ContentType"
+            $curlArgs += '-d', $Body
+        }
+        if ($Form) {
+            # Для multipart/form-data используем -F параметры
+            foreach ($key in $Form.Keys) {
+                $value = $Form[$key]
+                if ($value -is [System.IO.FileInfo]) {
+                    $curlArgs += '-F', "document=@`"$($value.FullName)`""
+                } else {
+                    $curlArgs += '-F', "$key=$value"
+                }
+            }
+        }
+    }
+
+    $curlArgs += $Uri
+
+    try {
+        $result = & curl @curlArgs 2>&1
+
+        if ($LASTEXITCODE -eq 0) {
+            # Парсим JSON
+            $jsonResult = $result | ConvertFrom-Json
+            return $jsonResult
+        } else {
+            throw "curl failed with exit code ${LASTEXITCODE}: $result"
+        }
+    } catch {
+        throw "Invoke-CurlMethod failed: $($_.Exception.Message)"
+    }
+}
+
 class TelegramService : ITelegramService {
     [string]$Token
     [int]$MaxFileSizeMB
@@ -40,9 +98,9 @@ class TelegramService : ITelegramService {
         }
         
         Write-OperationStart -Operation "Send Telegram message" -Target "Chat $chatId (length: $($text.Length) chars)" -FunctionName "SendMessage"
-        
+
         try {
-            $response = Invoke-RestMethod -Uri $uri -Method Post -ContentType "application/json" -Body ($params | ConvertTo-Json) -ErrorAction Stop
+            $response = Invoke-CurlMethod -Uri $uri -Method Post -ContentType "application/json" -Body ($params | ConvertTo-Json)
             Write-OperationSucceeded -Operation "Send Telegram message" -Details "Message ID: $($response.result.message_id)" -FunctionName "SendMessage"
             return New-SuccessResponse -Data $response
         } catch {
@@ -67,9 +125,9 @@ class TelegramService : ITelegramService {
         }
         
         Write-OperationStart -Operation "Edit Telegram message" -Target "Message $messageId in chat $chatId" -FunctionName "EditMessage"
-        
+
         try {
-            $response = Invoke-RestMethod -Uri $uri -Method Post -ContentType "application/json" -Body ($params | ConvertTo-Json) -ErrorAction Stop
+            $response = Invoke-CurlMethod -Uri $uri -Method Post -ContentType "application/json" -Body ($params | ConvertTo-Json)
             Write-OperationSucceeded -Operation "Edit Telegram message" -FunctionName "EditMessage"
             return New-SuccessResponse -Data $response
         } catch {
@@ -249,10 +307,10 @@ class TelegramService : ITelegramService {
         $uri = "$apiUrl/getUpdates?$queryString"
         
         Write-PSFMessage -Level Debug -FunctionName "GetUpdates" -Message "Getting updates with offset $offset and timeout $timeout"
-        
+
         try {
-            $response = Invoke-RestMethod -Uri $uri -Method Get -ErrorAction SilentlyContinue
-            
+            $response = Invoke-CurlMethod -Uri $uri -Method Get
+
             # Если дошли сюда, значит запрос успешен (HTTP 200)
             if ($response.ok) {
                 $updates = if ($null -ne $response.result) { $response.result } else { @() }
@@ -299,10 +357,10 @@ class TelegramService : ITelegramService {
                 Write-PSFMessage -Level Verbose -Message "Проверка токена Telegram (скрыт для безопасности)"
                 $apiUrl = "https://api.telegram.org/bot$telegramToken/getMe"
                 Write-PSFMessage -Level Verbose -Message "API URL: $apiUrl"
-                
+
                 try {
-                    $response = Invoke-RestMethod -Uri $apiUrl -Method Get -ErrorAction Stop -ConnectionTimeoutSeconds 10 -MaximumRedirection 0 -MaximumRetryCount 5
-                    
+                    $response = Invoke-CurlMethod -Uri $apiUrl -Method Get
+
                     if ($response.ok) {
                         $testResult = @{
                             Name = "Telegram Bot"
